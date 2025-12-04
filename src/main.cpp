@@ -27,8 +27,8 @@ using namespace vex;
   // Define Values for the Chassis here:
   Drive chassis
   (
-    motor_group(L1, L2), // Left drive train motors
-    motor_group(R1, R2), // Right drive train motors
+    motor_group(L1, L2, L3, L4), // Left drive train motors
+    motor_group(R1, R2, R3, R4), // Right drive train motors
     PORT6,               // Inertial Sensor Port
     3,                   // The diameter size of the wheel in inches
     1,                   // 
@@ -156,12 +156,12 @@ void autonomous()
   // }
 }
 
+
 /// @brief Runs during the UserControl section of the competition
 void usercontrol() 
 {
   // User control code here, inside the loop
   while (1) {
-
 
     chassis.arcade();
     wait(20, msec); // Sleep the task for a short amount of time to

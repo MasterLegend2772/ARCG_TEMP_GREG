@@ -74,8 +74,8 @@ void Drive::arcade()
 {
     int leftY = Controller1.Axis3.position(percent);
     int rightX = Controller1.Axis1.position(percent);
-    leftDrive.spin(forward, leftY-rightX, percent);
-    rightDrive.spin(forward, leftY+rightX, percent);
+    leftDrive.spin(forward, leftY+rightX, percent);
+    rightDrive.spin(forward, leftY-rightX, percent);
 }
 
 
