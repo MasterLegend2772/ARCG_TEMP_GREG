@@ -11,6 +11,7 @@
 #include "screen.h"
 #include "util.h"
 #include "Drive.h"
+#include "PID.h"
 
 using namespace vex;
 
@@ -158,14 +159,8 @@ void autonomous()
 
 void moveSlot()
 {
-  float startPos = revolver.position(rev);
-
-  revolver.spin(forward, 12, volt);
-
-  waitUntil(startPos != revolver.position(rev));
-
-  revolver.spin(forward, 0, volt);
-
+  revolver.setVelocity(100, percent);
+  revolver.spinFor(1, rev);
 }
 
 /// @brief Runs during the UserControl section of the competition
@@ -176,16 +171,11 @@ void usercontrol()
   // User control code here, inside the loop
   while (1) {
 
-    if(Controller1.ButtonR1.pressing() && !isSpinning)
+    if(Controller1.ButtonR1.pressing() && !revolver.isSpinning())
     {
-      thread revSpin = thread(moveSlot);
-      isSpinning = true;
-    }
-
-    if(!Controller1.ButtonR1.pressing() && isSpinning)
-    {
-      isSpinning = false;
-    }
+      revolver.setVelocity(100, percent);
+      revolver.spinFor(1, rev);
+    } 
 
     chassis.arcade();
     wait(20, msec); // Sleep the task for a short amount of time to
