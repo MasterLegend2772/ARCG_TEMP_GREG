@@ -167,7 +167,7 @@ void moveSlot()
 void outTake() {
   outtake.setVelocity(60, percent);
   outtake.spinToPosition(90, degrees, true);
-  outtake.spinToPosition(0, degrees, true);
+  outtake.spin(reverse);
   outtake.stop();
 }
 
@@ -188,7 +188,7 @@ void usercontrol()
 
     if(Controller1.ButtonA.pressing())
     {
-      outTake();
+      thread outtakeThread = thread(outTake);
     }
 
     chassis.arcade();
