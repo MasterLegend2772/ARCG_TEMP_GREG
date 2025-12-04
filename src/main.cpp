@@ -157,11 +157,20 @@ void autonomous()
   // }
 }
 
+
 void moveSlot()
 {
   revolver.setVelocity(100, percent);
   revolver.spinFor(1, rev);
 }
+//Outtake function
+void outTake() {
+  outtake.setVelocity(60, percent);
+  outtake.spinToPosition(90, degrees, true);
+  outtake.spinToPosition(0, degrees, true);
+  outtake.stop();
+}
+
 
 /// @brief Runs during the UserControl section of the competition
 void usercontrol() 
@@ -177,9 +186,15 @@ void usercontrol()
       revolver.spinFor(1, rev);
     } 
 
+    if(Controller1.ButtonA.pressing())
+    {
+      outTake();
+    }
+
     chassis.arcade();
     wait(20, msec); // Sleep the task for a short amount of time to
   }
+
 }
 
 
@@ -199,6 +214,7 @@ int main()
     wait(100, msec);
   }
 }
+
 
 
 /// @brief Sets the PID values for the DriveTrain
