@@ -156,16 +156,35 @@ void autonomous()
   // }
 }
 
+void moveSlot()
+{
+  float startPos = revolver.position(rev);
+
+  revolver.spin(forward, 12, volt);
+
+  waitUntil(startPos != revolver.position(rev));
+
+  revolver.spin(forward, 0, volt);
+
+}
 
 /// @brief Runs during the UserControl section of the competition
 void usercontrol() 
 {
+  bool isSpinning = false;
+
   // User control code here, inside the loop
   while (1) {
 
-    if(Controller1.ButtonR1.pressing())
+    if(Controller1.ButtonR1.pressing() && !isSpinning)
     {
-      revolver.spinToPosition(360, degrees, 100);
+      thread revSpin = thread(moveSlot);
+      isSpinning = true;
+    }
+
+    if(!Controller1.ButtonR1.pressing() && isSpinning)
+    {
+      isSpinning = false;
     }
 
     chassis.arcade();
