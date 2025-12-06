@@ -20,21 +20,23 @@ using namespace vex;
   // Competition Instance
   competition Competition;
 
-  int odomType = TWO_AT_45;
+  int odomType = NO_ODOM;
 
   bool isInAuton = false;
   int lastPressed = 0;
 
-  // Define Values for the Chassis here:
   Drive chassis
   (
     motor_group(L1, L2, L3, L4), // Left drive train motors
     motor_group(R1, R2, R3, R4), // Right drive train motors
     PORT6,               // Inertial Sensor Port
-    2.66,                   // The diameter size of the wheel in inches
+    2.75,              // The diameter size of the wheel in inches
     1,                   // 
     12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
-    odomType
+    odomType,
+    1,                  //Odometry wheel diameter (set to zero if no odom) (1.96 robot behind by .2)
+    0,               //Odom pod1 offset 
+    0                //Odom pod2 offset
   );
 
 //////////////////////////////////////////////////////////////////////
@@ -63,9 +65,9 @@ void preAuton()
   int lastPressed = 0;
 
   // Calibrates/Resets the Brains sensors before the competition
-  gyro1.calibrate();
-  forwardR.resetPosition();
-  lateral.resetPosition();
+  inertial1.calibrate();
+  rotation1.resetPosition();
+  rotation2.resetPosition();
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
                           vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};

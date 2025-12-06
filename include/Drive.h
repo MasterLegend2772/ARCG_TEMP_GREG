@@ -15,7 +15,9 @@ class Drive
     motor_group leftDrive, rightDrive;
     inertial inertialSensor;
 
-    float maxVoltage;
+    float driveMaxVoltage;
+    float turnMaxVoltage;
+
     float wheelRatio, wheelDiameter;
 
     float driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime;
@@ -28,7 +30,10 @@ class Drive
 
     float predictedAngle;
 
-    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType);
+    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType, float odomWheelDiameter, float odomPod1Offset, float odomPod2Offset);
+
+    void setDriveMaxVoltage(float maxVoltage);
+    void setTurnMaxVoltage(float maxVoltage);
 
     void setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
     void setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
@@ -48,16 +53,30 @@ class Drive
 
     void driveDistance(float distance);
     void driveDistance(float distance, float maxVoltage);
+    void driveDistanceWithOdom(float distance);
+
+
+
+    void moveable();
+
+
+
+
+
+    void setMaxVoltage(float volts);
+    float getMaxVoltage();
 
     void turn(float turnDegrees);
+    void turn(float turnDegrees, float maxVoltage);
+
     void turnToAngle(float angle);
+    void turnToAngle(float angle, float maxVoltage);
 
     void moveToPosition(float, float);
     void turnToPosition(float desX, float desY);
 
     void bezierTurn(float, float, float, float, float, float, int);
 
-    void updatePosition(float x, float y, float heading);
     void updatePosition();
     void setPosition(float x, float y, float heading);
 

@@ -27,13 +27,13 @@ motor outtake = motor(PORT1, ratio36_1, false);
 
 //////////// Odometry Sensors ////////////
 //TODO: CHANGE THE NAMES OF THESE
-rotation forwardR = rotation(PORT9);
-rotation lateral = rotation(PORT2);
+rotation rotation1 = rotation(PORT9);
+rotation rotation2 = rotation(PORT2);
 
 /////////////////////////////////////////
 
 //////////// Inertial Sensors ////////////
 
-inertial gyro1 = inertial(PORT6);
+inertial inertial1 = inertial(PORT6);
 
 /////////////////////////////////////////
