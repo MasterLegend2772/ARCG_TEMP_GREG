@@ -25,6 +25,8 @@ using namespace vex;
   bool isInAuton = false;
   int lastPressed = 0;
 
+  bool armUp = false;
+
   Drive chassis
   (
     motor_group(L1, L2, L3, L4), // Left drive train motors
@@ -159,19 +161,49 @@ void autonomous()
   // }
 }
 
-
+//Rotate revolver
 void moveSlot()
 {
+  revolver.setTimeout(1, seconds);
   revolver.setVelocity(100, percent);
   revolver.spinFor(1, rev);
+
 }
+
 //Outtake function
 void outTake() {
+  armUp = true;
   outtake.setVelocity(60, percent);
-  outtake.spinToPosition(90, degrees, true);
-  outtake.spin(reverse, 8, volt);
-  wait(0.5, sec);
+  outtake.spinToPosition(110, degrees, true);
+  outtake.spin(reverse, 10, volt);
+  wait(0.4, sec);
   outtake.stop(hold);
+  armUp = false;
+  moveSlot();
+
+}
+
+//Rise!!
+void rise() {
+
+  lift.set(true);
+
+}
+
+//Fall!
+void fall() {
+
+  lift.set(false);
+
+}
+
+//function to unload all
+void unloadAll() {
+  for(int i = 0; i <6; i++)
+      {
+        outTake();
+        waitUntil(!revolver.isSpinning());
+      }
 }
 
 
@@ -180,29 +212,35 @@ void usercontrol()
 {
   bool isSpinning = false;
 
+  Controller1.ButtonUp.pressed(rise);
+  Controller1.ButtonDown.pressed(fall);
+
   // User control code here, inside the loop
   while (1) {
 
     if(Controller1.ButtonR1.pressing() && !revolver.isSpinning())
     {
-      revolver.setVelocity(100, percent);
-      revolver.spinFor(1, rev);
+      if(armUp == false) {
+        moveSlot();
+      }
     } 
 
-    if(Controller1.ButtonA.pressing())
+    if(Controller1.ButtonR2.pressing() && !revolver.isSpinning())
     {
       thread outtakeThread = thread(outTake);
     }
 
-    if(Controller1.ButtonB.pressing())
+    if(Controller1.ButtonL2.pressing())
     {
-      for(int i = 0; i < 6; i++)
-      {
-        outTake();
-        moveSlot();
-        waitUntil(!revolver.isSpinning());
-      }
+      thread unloadThread = thread(unloadAll);
     }
+
+    if(Controller1.ButtonL1.pressing() && !revolver.isSpinning()) {
+      intake.spin(reverse, 10, volt);
+    }else{
+      intake.spin(forward, 0, volt);
+    }
+    
 
     chassis.arcade();
     wait(20, msec); // Sleep the task for a short amount of time to
@@ -259,6 +297,8 @@ void setDriveTrainConstants()
 void Auton_1()
 {
     Brain.Screen.print("Auton 1 running.");
+
+    chassis.driveDistance(15);
 }
 
 /// @brief Auton Slot 2 - Write code for route within this function.
