@@ -46,6 +46,7 @@ using namespace vex;
 ///////////////////////// Prototypes /////////////////////////////////
 
 void setDriveTrainConstants();
+void toggleDriveSpeed();
 void Auton_1();
 void Auton_2();
 void Auton_3();
@@ -124,7 +125,7 @@ void autonomous()
 {
   isInAuton = true;
   chassis.setPosition(0,0,0);
-  chassis.driveDistance(15);
+  Auton_1();
   //chassis.turnToAngle(90);
   //chassis.driveDistance(12);
   //chassis.moveToPosition(0,0);
@@ -161,6 +162,13 @@ void autonomous()
   // }
 }
 
+// 1 - Blue
+// 2 - Red
+// 0 - empty
+
+int revolverSlots [6][3];
+int currentSlot = 0;
+
 //Rotate revolver
 void moveSlot()
 {
@@ -172,29 +180,66 @@ void moveSlot()
 
 //Outtake function
 void outTake() {
-  armUp = true;
-  outtake.setVelocity(60, percent);
-  outtake.spinToPosition(110, degrees, true);
-  outtake.spin(reverse, 10, volt);
-  wait(0.4, sec);
-  outtake.stop(hold);
-  armUp = false;
-  moveSlot();
+  if(!revolver.isSpinning())
+  {
+    armUp = true;
+    outtake.setVelocity(60, percent);
+    outtake.spinToPosition(110, degrees, true);
+    outtake.spin(reverse, 10, volt);
+    wait(0.4, sec);
+    outtake.stop(hold);
+    armUp = false;
+    moveSlot();
 
+    // Reset Slot 
+    int tempSlotNumber = currentSlot + 3;
+    if(tempSlotNumber > 6 )
+      tempSlotNumber = tempSlotNumber - 6;
+    
+    revolverSlots[tempSlotNumber][0] = 0;
+    revolverSlots[tempSlotNumber][1] = 0;
+    revolverSlots[tempSlotNumber][2] = 0;
+
+    currentSlot++;
+  }
+}
+
+bool isBottomOuttakeRunning = false;
+void bottomOuttakeFunction()
+{
+  if(!revolver.isSpinning())
+  {
+    isBottomOuttakeRunning = true;
+    armUp = true;
+    intake.spin(reverse, 12, volt);
+    bottomOuttake.setVelocity(100, percent);
+    bottomOuttake.spinToPosition(200, degrees, true);
+    bottomOuttake.spin(reverse, 12, volt);
+    wait(0.8, sec);
+    bottomOuttake.stop(hold);
+    //intake.spin(reverse, 0, volt);
+    armUp = false;
+    isBottomOuttakeRunning = false;
+
+    revolverSlots[currentSlot][0] = 0;
+    revolverSlots[currentSlot][1] = 0;
+    revolverSlots[currentSlot][2] = 0;
+  }
 }
 
 //Rise!!
 void rise() {
 
-  lift.set(true);
-
+  liftL.set(true);
+  wait(100, msec);
+  liftR.set(true);
 }
 
 //Fall!
 void fall() {
 
-  lift.set(false);
-
+  liftL.set(false);
+  liftR.set(false);
 }
 
 //function to unload all
@@ -206,44 +251,145 @@ void unloadAll() {
       }
 }
 
+// Check Canister
+bool isSlotFull()
+{
+  if((frontColorSensor.hue() <= 20 && frontColorSensor.hue() >= 0) ||
+    (frontColorSensor.hue() <= 170 && frontColorSensor.hue() >= 200) &&
+    (middleColorSensor.hue() <= 20 && middleColorSensor.hue() >= 0) ||
+    (middleColorSensor.hue() <= 170 && middleColorSensor.hue() >= 200) &&
+    (backColorSensor.hue() <= 20 && backColorSensor.hue() >= 0) || 
+    (backColorSensor.hue() <= 170 && backColorSensor.hue() >= 200)
+    )
+    {
+      Brain.Screen.setCursor(1,1);
+      Brain.Screen.print("Is Full");
+      return true;
+    }
+  else 
+    return false;
+}
+
+// Check Revolver
+bool isCurrentSlotFilled()
+{
+  if(revolverSlots[currentSlot][0] != 0 || revolverSlots[currentSlot][1] != 0 || revolverSlots[currentSlot][2] != 0)
+    return true;
+  else
+    return false;
+}
+
+void changeSlot()
+{
+  // SetSlotColor 0
+  if(backColorSensor.color() == red)
+    revolverSlots[currentSlot][0] = 2;
+  else
+    revolverSlots[currentSlot][0] = 1;
+  
+  // SetSlotColor 1
+
+  if(middleColorSensor.color() == red)
+    revolverSlots[currentSlot][0] = 2;
+  else
+    revolverSlots[currentSlot][0] = 1;
+
+  // SetSlotColor 2
+
+  if(frontColorSensor.color() == red)
+    revolverSlots[currentSlot][0] = 2;
+  else
+    revolverSlots[currentSlot][0] = 1;
+
+  // Change Current Slot
+  if(currentSlot == 5)
+    currentSlot = 0;
+  else
+    currentSlot++;
+  
+  wait(300, msec);
+  moveSlot();
+}
+
+void moveIntake()
+{
+  if(!revolver.isSpinning())
+  {
+    intake.spin(forward, 12, volt);
+  }
+}
+
+void intakeMoveSlot()
+{
+  
+}
 
 /// @brief Runs during the UserControl section of the competition
 void usercontrol() 
 {
+  isInAuton = true;
+  Brain.Screen.clearScreen();
   bool isSpinning = false;
 
   Controller1.ButtonUp.pressed(rise);
   Controller1.ButtonDown.pressed(fall);
+  backColorSensor.setLight(ledState::on);
+  middleColorSensor.setLight(ledState::on);
+  frontColorSensor.setLight(ledState::on);
+
+  Controller1.ButtonR1.pressed(outTake);
+  Controller1.ButtonR2.pressed(bottomOuttakeFunction);
+
+  Controller1.ButtonL1.pressed(moveIntake);
+  Controller1.ButtonL2.pressed(moveIntake);
+  
+
 
   // User control code here, inside the loop
-  while (1) {
+  while (1) 
+  {
 
-    if(Controller1.ButtonR1.pressing() && !revolver.isSpinning())
+    if(Controller1.ButtonB.pressing() && !revolver.isSpinning())
     {
       if(armUp == false) {
         moveSlot();
       }
     } 
+    // if((Controller1.ButtonL1.pressing() || Controller1.ButtonL2.pressing()) && isSlotFull())
+    //   {
+    //     if(armUp == false) {
+    //     moveSlot();
+    //   }
+     // }
 
-    if(Controller1.ButtonR2.pressing() && !revolver.isSpinning())
+    // if(Controller1.ButtonR1.pressing() && !revolver.isSpinning())
+    // {
+    //   thread outtakeThread = thread(outTake);
+    // }
+
+    // if(Controller1.ButtonR2.pressing() && !revolver.isSpinning())
+    // {
+    //   thread outtakeThread = thread(bottomOuttakeFunction);
+    // }
+
+    // if(Controller1.ButtonL2.pressing())
+    // {
+    //   thread unloadThread = thread(unloadAll);
+    // }
+
+    if(Controller1.ButtonL2.pressing() && !revolver.isSpinning())
     {
-      thread outtakeThread = thread(outTake);
-    }
-
-    if(Controller1.ButtonL2.pressing())
+      matchLoader.set(true);
+    }else
     {
-      thread unloadThread = thread(unloadAll);
+      matchLoader.set(false);
+      if(!Controller1.ButtonL1.pressing() && !Controller1.ButtonR2.pressing())
+        intake.spin(reverse, 0, volt);
     }
-
-    if(Controller1.ButtonL1.pressing() && !revolver.isSpinning()) {
-      intake.spin(reverse, 10, volt);
-    }else{
-      intake.spin(forward, 0, volt);
-    }
-    
 
     chassis.arcade();
     wait(20, msec); // Sleep the task for a short amount of time to
+    Brain.Screen.clearScreen();
   }
 
 }
@@ -275,17 +421,17 @@ void setDriveTrainConstants()
     chassis.setDriveConstants(
         0.2, // Kp - Proportion Constant
         0.0, // Ki - Integral Constant
-        0, // Kd - Derivative Constant
+        0.1, // Kd - Derivative Constant
         0.05, // Settle Error
         300, // Time to Settle
-        300000 // End Time
+        3000 // End Time
     );
 
     // Set the Turn PID values for the DriveTrain
     chassis.setTurnConstants(
-        0.5,    // Kp - Proportion Constant
+        0.4,    // Kp - Proportion Constant
         0,      // Ki - Integral Constant
-        0.1,      // Kd - Derivative Constant 
+        0,      // Kd - Derivative Constant 
         0.5,    // Settle Error
         300,    // Time to Settle
         3000    // End Time
@@ -298,8 +444,34 @@ void Auton_1()
 {
     Brain.Screen.print("Auton 1 running.");
 
-    chassis.driveDistance(15);
+    chassis.driveDistance(42);
+    chassis.turnToAngle(-90);
+    rise();
+    chassis.driveDistance(21);
+    outTake();
+    fall();
+    // chassis.turnToAngle(90);                          
+    // intake.spin(forward, 100, percent);
+    // chassis.driveDistance(15);
+    // for(int i = 0; i < 5; i++) 
+    // {
+    //   wait(3, seconds);
+    //   if(isSlotFull) {
+    //   moveSlot();
+    //   }
+    // }
+    // intake.stop();
+    // chassis.driveDistance(-26);
+    // chassis.turnToAngle(180);
+    // matchLoader.on();
+    // chassis.driveDistance(22);
+    // for(int i = 0; i < 5; i++) 
+    // {
+    //   outTake();
+    //   moveSlot();
+    // }
 }
+
 
 /// @brief Auton Slot 2 - Write code for route within this function.
 void Auton_2()

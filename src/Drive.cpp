@@ -87,7 +87,7 @@ void Drive::arcade()
     int rightX = 0;
     if(Controller1.Axis3.position(percent) >= 0)
         leftY = pow(Controller1.Axis3.position(percent),2)/100;
-    else
+    else                                                                                                                                                                                                                                                                                                                                                                                                                          
         leftY = pow(Controller1.Axis3.position(percent),2)/-100;
     
     if(Controller1.Axis1.position(percent) >= 0)
@@ -95,6 +95,8 @@ void Drive::arcade()
     else
         rightX = pow(Controller1.Axis1.position(percent),2)/-100;
 
+    leftY = clamp(leftY, -60, 60);
+    rightX = clamp(rightX,-60, 60);
     leftDrive.spin(forward, leftY+rightX, percent);
     rightDrive.spin(forward, leftY-rightX, percent);
 }

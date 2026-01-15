@@ -30,4 +30,12 @@ extern rotation rotation2;
 
 extern inertial inertial1;
 
-extern led lift;
+extern led liftR;
+extern led liftL;
+extern led matchLoader;
+
+extern optical backColorSensor;
+extern optical middleColorSensor;
+extern optical frontColorSensor;
+
+extern motor bottomOuttake;

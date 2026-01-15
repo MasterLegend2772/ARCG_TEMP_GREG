@@ -24,7 +24,7 @@ motor L4 = motor(PORT20, ratio6_1, false);
 //System
 motor revolver = motor(PORT10, ratio36_1, false);
 motor outtake = motor(PORT1, ratio36_1, false);
-motor intake = motor(PORT11, ratio36_1, false);
+motor intake = motor(PORT2, ratio36_1, false);
 
 //////////// Odometry Sensors ////////////
 //TODO: CHANGE THE NAMES OF THESE
@@ -35,10 +35,18 @@ rotation rotation2 = rotation(PORT2);
 
 //////////// Inertial Sensors ////////////
 
-inertial inertial1 = inertial(PORT6);
+inertial inertial1 = inertial(PORT9);
 
 /////////////////////////////////////////
 
-led lift = led(Brain.ThreeWirePort.A);
+led liftR = led(Brain.ThreeWirePort.A);
+led liftL = led(Brain.ThreeWirePort.B);
+led matchLoader = led(Brain.ThreeWirePort.H);
 
 /////////////////////////////////////
+
+optical backColorSensor = optical(PORT6);
+optical middleColorSensor = optical(PORT7);
+optical frontColorSensor = optical(PORT16);
+
+motor bottomOuttake = motor(PORT3, ratio18_1, false);
