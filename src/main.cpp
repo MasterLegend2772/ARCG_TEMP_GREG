@@ -73,8 +73,8 @@ void preAuton()
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
                           vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
-  std::string names[8] = {"Auton Left 1", "Auton Right 1", "Auton Left 3", "Auton Right 3", 
-                          "Auton Left 2", "Auton Right 2", "Auton Left 4", "Auton Right 4"};
+  std::string names[8] = {"Auton L11", "Auton R1", "Auton L3", "Auton R3", 
+                          "Auton L2", "Auton R2", "Auton L4", "Auton R4"};
   Button buttons[9];
   createAutonButtons(colors, names, buttons);
   buttons[0].setChosen(true);
