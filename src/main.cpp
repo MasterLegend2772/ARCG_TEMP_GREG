@@ -44,17 +44,16 @@ using namespace vex;
 //////////////////////////////////////////////////////////////////////
 
 ///////////////////////// Prototypes /////////////////////////////////
-
 void setDriveTrainConstants();
 void toggleDriveSpeed();
-void Auton_1();
-void Auton_2();
-void Auton_3();
-void Auton_4();
-void Auton_5();
-void Auton_6();
-void Auton_7();
-void Auton_8();
+void Auton_Right1();
+void Auton_Right2();
+void Auton_Right3();
+void Auton_Right4();
+void Auton_Left1();
+void Auton_Left2();
+void Auton_Left3();
+void Auton_Left4();
 
 //////////////////////////////////////////////////////////////////////
 
@@ -74,8 +73,8 @@ void preAuton()
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
                           vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
-  std::string names[8] = {"Auton 1", "Auton 2", "Auton 3", "Auton 4", 
-                          "Auton 5", "Auton 6", "Auton 7", "Auton 8"};
+  std::string names[8] = {"Auton Left 1", "Auton Right 1", "Auton Left 3", "Auton Right 3", 
+                          "Auton Left 2", "Auton Right 2", "Auton Left 4", "Auton Right 4"};
   Button buttons[9];
   createAutonButtons(colors, names, buttons);
   buttons[0].setChosen(true);
@@ -125,10 +124,10 @@ void autonomous()
 {
   isInAuton = true;
   chassis.setPosition(0,0,0);
-  Auton_1();
-  //chassis.turnToAngle(90);
-  //chassis.driveDistance(12);
-  //chassis.moveToPosition(0,0);
+  Auton_Right1();
+  /* Add switch for input button mapping
+  
+  OR link specific robots to Autons
 
   // switch (lastPressed) 
   // {
@@ -159,12 +158,12 @@ void autonomous()
   //   default:
   //     DefaultAuton();
   //     break;
-  // }
+  // } */
 }
 
+// 0 - Empty
 // 1 - Blue
 // 2 - Red
-// 0 - empty
 
 int revolverSlots [6][3];
 int currentSlot = 0;
@@ -172,7 +171,7 @@ int currentSlot = 0;
 //Rotate revolver
 void moveSlot()
 {
-  revolver.setTimeout(1, seconds);
+  revolver.setTimeout(0.5, seconds);
   revolver.setVelocity(100, percent);
   revolver.spinFor(1, rev);
 
@@ -249,6 +248,20 @@ void unloadAll() {
         outTake();
         waitUntil(!revolver.isSpinning());
       }
+}
+
+// Function to Unload Specific Color --[MUST TEST]--
+void unload(color c) {
+  for (int i = 0; i < 6; i++) {
+    if (revolverSlots[i][0] == c || revolverSlots[i][1] == c || revolverSlots[i][2] == c) {
+      while (currentSlot != i) {
+        moveSlot();
+        waitUntil(!revolver.isSpinning());
+      }
+
+      outTake();
+    }
+  }
 }
 
 // Check Canister
@@ -439,79 +452,76 @@ void setDriveTrainConstants()
     
 }
 
-/// @brief Auton Slot 1 - Write code for route within this function.
-void Auton_1()
-{
-    Brain.Screen.print("Auton 1 running.");
-
-    chassis.driveDistance(42);
-    chassis.turnToAngle(-90);
-    rise();
-    chassis.driveDistance(21);
-    outTake();
-    fall();
-    // chassis.turnToAngle(90);                          
-    // intake.spin(forward, 100, percent);
-    // chassis.driveDistance(15);
-    // for(int i = 0; i < 5; i++) 
-    // {
-    //   wait(3, seconds);
-    //   if(isSlotFull) {
-    //   moveSlot();
-    //   }
-    // }
-    // intake.stop();
-    // chassis.driveDistance(-26);
-    // chassis.turnToAngle(180);
-    // matchLoader.on();
-    // chassis.driveDistance(22);
-    // for(int i = 0; i < 5; i++) 
-    // {
-    //   outTake();
-    //   moveSlot();
-    // }
-}
-
-
-/// @brief Auton Slot 2 - Write code for route within this function.
-void Auton_2()
-{
-    Brain.Screen.print("Auton 2 running.");
-}
-
-/// @brief Auton Slot 3 - Write code for route within this function.
-void Auton_3()
-{
-    Brain.Screen.print("Auton 3 running.");
-}
-
-/// @brief Auton Slot 4 - Write code for route within this function.
-void Auton_4()
-{
-    Brain.Screen.print("Auton 4 running.");
-}
-
-/// @brief Auton Slot 5 - Write code for route within this function.
-void Auton_5()
-{
-    Brain.Screen.print("Auton 5 running.");
-}
-
-/// @brief Auton Slot 6 - Write code for route within this function.
-void Auton_6()
-{
-    Brain.Screen.print("Auton 6 running.");
-}
-
-/// @brief Auton Slot 7 - Write code for route within this function.
-void Auton_7()
-{
-    Brain.Screen.print("Auton 7 running.");
-}
-
-/// @brief Auton Slot 8 - Write code for route within this function.
-void Auton_8()
-{
-    Brain.Screen.print("Auton 8 running.");
+/// @brief Auton Right Slot 1 [BLUE] - Write code for route within this function.
+void Auton_Right1() {
+    Brain.Screen.print("EXECUTING: Auton 1 - RIGHT");
     
+
+    chassis.driveDistance(36);
+    chassis.turnToAngle(90);
+    chassis.driveDistance(18);
+    moveIntake();
+    wait(3, sec);
+    chassis.driveDistance(-28);
+    chassis.turnToAngle(0);
+    chassis.driveDistance(24);
+    chassis.turnToAngle(-90);
+    chassis.driveDistance(12);
+    chassis.turnToAngle(-180);
+    chassis.driveDistance(48);
+    unload(blue);
+    // Load Red Balls
+}
+
+
+/// @brief Auton Right Slot 2 [RED] - Write code for route within this function.
+void Auton_Right2() {
+    Brain.Screen.print("EXECUTING: Auton 2 - RIGHT");
+}
+
+/// @brief Auton Right Slot 3 [BLUE] - Write code for route within this function.
+void Auton_Right3() {
+    Brain.Screen.print("EXECUTING: Auton 3 - RIGHT");
+}
+
+/// @brief Auton Right Slot 4 [RED]- Write code for route within this function.
+void Auton_Right4() {
+    Brain.Screen.print("EXECUTING: Auton 4 - RIGHT");
+}
+
+/// @brief Auton Left Slot 1 [BLUE]- Write code for route within this function.
+void Auton_Left1() {
+    Brain.Screen.print("EXECUTING: Auton 1 - LEFT");
+    
+
+    chassis.driveDistance(28);
+    chassis.turnToAngle(-90);
+    chassis.driveDistance(14);
+    moveIntake();
+    wait(3, sec);
+    chassis.turnToAngle(0);
+    chassis.driveDistance(10);
+    chassis.turn(90);
+    
+    chassis.driveDistance(18);
+    chassis.turn(90);
+    chassis.driveDistance(40);
+    unload(red);
+    // Load Blue Balls;
+}
+
+
+/// @brief Auton Left Slot 2 [RED] - Write code for route within this function.
+void Auton_Left2() {
+    Brain.Screen.print("EXECUTING: Auton 2 - LEFT");
+}
+
+/// @brief Auton Left Slot 3 [BLUE] - Write code for route within this function.
+void Auton_Left3() {
+    Brain.Screen.print("EXECUTING: Auton 3 - LEFT");
+}
+
+/// @brief Auton Left Slot 4 [RED] - Write code for route within this function.
+void Auton_Left4() {
+    Brain.Screen.print("EXECUTING: Auton 4 - LEFT");
 }

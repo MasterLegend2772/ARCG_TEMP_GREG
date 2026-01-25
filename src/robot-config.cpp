@@ -10,10 +10,10 @@ controller Controller1;
 
 //////////// Drive Train Motors ////////////
 
-motor R1 = motor(PORT14, ratio6_1, true);
-motor R2 = motor(PORT15, ratio6_1, true);
-motor R3 = motor(PORT12, ratio6_1, true);
-motor R4 = motor(PORT13, ratio6_1, true);
+motor R1 = motor(PORT12, ratio6_1, true);
+motor R2 = motor(PORT13, ratio6_1, true);
+motor R3 = motor(PORT14, ratio6_1, true);
+motor R4 = motor(PORT16, ratio6_1, true);
 motor L1 = motor(PORT17, ratio6_1, false);
 motor L2 = motor(PORT18, ratio6_1, false);
 motor L3 = motor(PORT19, ratio6_1, false);
