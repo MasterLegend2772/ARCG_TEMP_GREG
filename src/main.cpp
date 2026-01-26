@@ -458,22 +458,20 @@ void Auton_Right1() {
     
     /*
         -- Fix:: Settle Time && Voltage (drive/turn stoppage and step timing)
-        -- Fix:: Turning  @ Step 4 (see Whiteboard) >> Currently: Hitting Goal Post
-        -- Modify:: drive/turn functions (include: minVoltage, precedence)\
+        -- Modify:: drive/turn functions (include: minVoltage, precedence)
         -- Add:: Additional tests and hardware as needed (finalize 24" and 15" ASAP)
     */
-    chassis.driveDistance(36, 3.0, 12.0, false);
+    chassis.driveDistance(38, 3.0, 12.0, false);
     chassis.turnToAngle(90, 3.0, 12.0, false);
     chassis.driveDistance(18, 3.0, 12.0, false);
     moveIntake();
     wait(3, sec);
-    chassis.driveDistance(-28, 3.0, 12.0, false);
+    chassis.driveDistance(-16, 3.0, 12.0, false);
     chassis.turnToAngle(0, 3.0, 12.0, false);
-    chassis.driveDistance(24, 3.0, 12.0, false);
-    chassis.turnToAngle(-90, 3.0, 12.0, false);
-    chassis.driveDistance(12, 3.0, 12.0, false);
-    chassis.turnToAngle(-180, 3.0, 12.0, false);
-    chassis.driveDistance(42, 3.0, 12.0, false);
+    chassis.driveDistance(26, 3.0, 12.0, false);
+    chassis.turnToAngle(-170, 3.0, 12.0, false);
+    chassis.driveDistance(48, 3.0, 12.0, false);
+    chassis.brake();
     unload(blue);
     // Load Red Balls
 }
