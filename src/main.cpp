@@ -494,23 +494,26 @@ void Auton_Right4() {
 
 /// @brief Auton Left Slot 1 [BLUE]- Write code for route within this function.
 void Auton_Left1() {
-    Brain.Screen.print("EXECUTING: Auton 1 - LEFT");
+    Brain.Screen.print("EXECUTING: Auton 1 - RIGHT");
     
-
-    chassis.driveDistance(28);
-    chassis.turnToAngle(-90);
-    chassis.driveDistance(14);
+    /*
+        -- Fix:: Settle Time && Voltage (drive/turn stoppage and step timing)
+        -- Modify:: drive/turn functions (include: minVoltage, precedence)
+        -- Add:: Additional tests and hardware as needed (finalize 24" and 15" ASAP)
+    */
+    chassis.driveDistance(38, 3.0, 12.0, false);
+    chassis.turnToAngle(-90, 3.0, 12.0, false);
+    chassis.driveDistance(18, 3.0, 12.0, false);
     moveIntake();
     wait(3, sec);
-    chassis.turnToAngle(0);
-    chassis.driveDistance(10);
-    chassis.turn(90);
-    
-    chassis.driveDistance(18);
-    chassis.turn(90);
-    chassis.driveDistance(40);
+    chassis.driveDistance(-16, 3.0, 12.0, false);
+    chassis.turnToAngle(0, 3.0, 12.0, false);
+    chassis.driveDistance(26, 3.0, 12.0, false);
+    chassis.turnToAngle(170, 3.0, 12.0, false);
+    chassis.driveDistance(48, 3.0, 12.0, false);
+    chassis.brake();
     unload(red);
-    // Load Blue Balls;
+    // Load Blue Balls
 }
 
 
