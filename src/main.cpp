@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Organization:       Autonomous Robotics Club (ARC)                      */
-/*    Authors:            Coby Smith and Joesph Dye                           */
+/*    Authors:            Coby Smith and Joseph Dye                           */
 /*    Created:            9/9/2024                                            */
 /*    Description:        ARC Template                                        */
 /*                                                                            */
@@ -26,6 +26,12 @@ using namespace vex;
   int lastPressed = 0;
 
   bool armUp = false;
+
+  //Used for color sort
+  const int blueTeam = 1;
+  const int redTeam = 2;
+  int teamColor;
+
 
   Drive chassis
   (
@@ -168,18 +174,32 @@ void autonomous()
 int revolverSlots [6][3];
 int currentSlot = 0;
 
+//Color Sort (Blue team = 1, Red Team = 2)
+void teamColorSelect(int teamColor) 
+{
+  if(teamColor == 1) //Blue Team
+  {
+
+  }
+  if(teamColor == 2) //Red Team
+  {
+
+  }
+
+
+}
+
 //Rotate revolver
 void moveSlot()
 {
   revolver.setTimeout(0.5, seconds);
   revolver.setVelocity(100, percent);
   revolver.spinFor(1, rev);
-
 }
 
-//Outtake function
+//Outtake function   ********HAVE SOMEONE LOOK AT HOW COLOR SORT MODIFIED THIS*********
 void outTake() {
-  if(!revolver.isSpinning())
+  if(!revolver.isSpinning() && !currentSlotMajorityEnemy(teamColor))
   {
     armUp = true;
     outtake.setVelocity(60, percent);
@@ -200,6 +220,13 @@ void outTake() {
     revolverSlots[tempSlotNumber][2] = 0;
 
     currentSlot++;
+  }
+  else {
+    if(currentSlotMajorityEnemy(teamColor)) 
+    {
+      moveSlot();
+      currentSlot++;
+    }
   }
 }
 
@@ -283,6 +310,7 @@ bool isSlotFull()
     return false;
 }
 
+
 // Check Revolver
 bool isCurrentSlotFilled()
 {
@@ -300,19 +328,19 @@ void changeSlot()
   else
     revolverSlots[currentSlot][0] = 1;
   
-  // SetSlotColor 1
+  // SetSlotColor 1                        
 
   if(middleColorSensor.color() == red)
-    revolverSlots[currentSlot][0] = 2;
+    revolverSlots[currentSlot][1] = 2;
   else
-    revolverSlots[currentSlot][0] = 1;
+    revolverSlots[currentSlot][1] = 1;
 
   // SetSlotColor 2
 
   if(frontColorSensor.color() == red)
-    revolverSlots[currentSlot][0] = 2;
+    revolverSlots[currentSlot][2] = 2;
   else
-    revolverSlots[currentSlot][0] = 1;
+    revolverSlots[currentSlot][2] = 1;
 
   // Change Current Slot
   if(currentSlot == 5)
@@ -322,6 +350,18 @@ void changeSlot()
   
   wait(300, msec);
   moveSlot();
+}
+
+//Check for majority color
+bool currentSlotMajorityEnemy(int teamColor) 
+{
+  if((revolverSlots[currentSlot][0] == teamColor && revolverSlots[currentSlot][1] == teamColor)  || //Finds if majority is our team!
+      (revolverSlots[currentSlot][1] == teamColor && revolverSlots[currentSlot][2] == teamColor) ||
+      (revolverSlots[currentSlot][0] == teamColor && revolverSlots[currentSlot][2] == teamColor))
+    return false;
+
+  else //If majority is not our team, it is the enemy team!
+    return true;
 }
 
 void moveIntake()
@@ -355,7 +395,7 @@ void usercontrol()
 
   Controller1.ButtonL1.pressed(moveIntake);
   Controller1.ButtonL2.pressed(moveIntake);
-  
+
 
 
   // User control code here, inside the loop
@@ -368,6 +408,20 @@ void usercontrol()
         moveSlot();
       }
     } 
+
+    //Color sort function
+    if(Controller1.ButtonLeft.pressing())
+    {
+      teamColorSelect(1); //Blue team selected
+    }
+
+    if(Controller1.ButtonRight.pressing())
+    {
+      teamColorSelect(2); //Red team selected
+    }
+
+
+
     // if((Controller1.ButtonL1.pressing() || Controller1.ButtonL2.pressing()) && isSlotFull())
     //   {
     //     if(armUp == false) {
