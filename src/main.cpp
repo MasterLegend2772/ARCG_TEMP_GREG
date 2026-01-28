@@ -471,6 +471,7 @@ void Auton_Right1() {
     // Initial Diagnostics
     std::cout << std::endl << std::endl << std::endl;
     std::cout << "_______________________________" << std::endl;
+    std::cout << std::setw(30) << "EXECUTING: Auton Right" << std::endl;
     std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
     std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
 
@@ -487,7 +488,7 @@ void Auton_Right1() {
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.5, sec);
     moveIntake();
-    wait(2.5, sec); // Adjust time as needed for optimal loading
+    wait(4, sec); // Adjust time as needed for optimal loading
 
     // Reverse to Load Side Blocks [2]
     chassis.driveDistance(-15.5, 3.0, 12.0, false);
