@@ -179,11 +179,11 @@ void teamColorSelect(int teamColor)
 {
   if(teamColor == 1) //Blue Team
   {
-
+    Brain.Screen.print("Blue Team Selected");
   }
   if(teamColor == 2) //Red Team
   {
-
+    Brain.Screen.print("Red Team Selected");
   }
 
 
