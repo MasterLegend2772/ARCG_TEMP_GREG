@@ -211,13 +211,15 @@ void bottomOuttakeFunction()
   {
     isBottomOuttakeRunning = true;
     armUp = true;
-    intake.spin(reverse, 12, volt);
+    intakeLeft.spin(reverse, 12, volt);
+    intakeRight.spin(reverse, 12, volt);
     bottomOuttake.setVelocity(100, percent);
     bottomOuttake.spinToPosition(200, degrees, true);
     bottomOuttake.spin(reverse, 12, volt);
     wait(0.8, sec);
     bottomOuttake.stop(hold);
-    //intake.spin(reverse, 0, volt);
+    //intakeLeft.spin(reverse, 0, volt);
+    //intakeRight.spin(reverse, 0, volt);
     armUp = false;
     isBottomOuttakeRunning = false;
 
@@ -230,9 +232,9 @@ void bottomOuttakeFunction()
 //Rise!!
 void rise() {
 
-  liftL.set(true);
-  wait(100, msec);
   liftR.set(true);
+  wait(10, msec);
+  liftL.set(true);
 }
 
 //Fall!
@@ -329,7 +331,8 @@ void moveIntake()
 {
   if(!revolver.isSpinning())
   {
-    intake.spin(forward, 12, volt);
+    intakeLeft.spin(forward, 12, volt);
+    intakeRight.spin(forward, 12, volt);
   }
 }
 
@@ -398,7 +401,10 @@ void usercontrol()
     {
       matchLoader.set(false);
       if(!Controller1.ButtonL1.pressing() && !Controller1.ButtonR2.pressing())
-        intake.spin(reverse, 0, volt);
+      {
+        intakeLeft.spin(reverse, 0, volt);
+        intakeRight.spin(reverse, 0, volt);
+      }
     }
 
     chassis.arcade();

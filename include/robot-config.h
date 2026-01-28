@@ -23,7 +23,8 @@ extern motor_group leftDrive;
 
 extern motor revolver;
 extern motor outtake;
-extern motor intake;
+extern motor intakeLeft;
+extern motor intakeRight;
 
 extern rotation rotation1;
 extern rotation rotation2;
