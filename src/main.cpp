@@ -482,10 +482,10 @@ void Auton_Right1() {
     chassis.turnToAngle(90, 3.0, 9.0, false);
     std::cout << inertial1.heading() << std::endl;
     wait(0.5, sec);
-    chassis.driveDistance(7.5, 3.0, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
 
     // Load Blocks from Loader (including: Extra given Loader Blocks [6])
+    chassis.driveDistance(7.5, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.5, sec);
     moveIntake();
     wait(2.5, sec); // Adjust time as needed for optimal loading
