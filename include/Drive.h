@@ -40,6 +40,7 @@ class Drive
     void setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
     void setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
 
+    int arcadePower = 3;
     void arcade();
     void tank();
 

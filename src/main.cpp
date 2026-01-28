@@ -183,15 +183,11 @@ void outTake() {
   if(!revolver.isSpinning())
   {
     armUp = true;
-    outtakeLeft.setVelocity(60, percent);
-    outtakeRight.setVelocity(60, percent);
-    outtakeLeft.spinToPosition(110, degrees, true);
-    outtakeRight.spinToPosition(110, degrees, true);
-    outtakeLeft.spin(reverse, 10, volt);
-    outtakeRight.spin(reverse, 10, volt);
+    outtake.setVelocity(60, percent);
+    outtake.spinToPosition(50, degrees, true);
+    outtake.spin(reverse, 10, volt);
     wait(0.4, sec);
-    outtakeLeft.stop(hold);
-    outtakeRight.stop(hold);
+    outtake.stop(hold);
     armUp = false;
     moveSlot();
 

@@ -88,14 +88,14 @@ void Drive::arcade()
     int leftY = 0;
     int rightX = 0;
     if(Controller1.Axis3.position(percent) >= 0)
-        leftY = pow(Controller1.Axis3.position(percent),2)/100;
+        leftY = pow(Controller1.Axis3.position(percent), arcadePower)/(pow(10, arcadePower));
     else                                                                                                                                                                                                                                                                                                                                                                                                                          
-        leftY = pow(Controller1.Axis3.position(percent),2)/-100;
+        leftY = pow(Controller1.Axis3.position(percent), arcadePower)/(-1 * (pow(10, arcadePower)));
     
     if(Controller1.Axis1.position(percent) >= 0)
-        rightX = pow(Controller1.Axis1.position(percent),2)/100;
+        rightX = pow(Controller1.Axis1.position(percent), arcadePower)/(pow(10, arcadePower));
     else
-        rightX = pow(Controller1.Axis1.position(percent),2)/-100;
+        rightX = pow(Controller1.Axis1.position(percent), arcadePower)/(-1 * (pow(10, arcadePower)));
 
     leftY = clamp(leftY, -60, 60);
     rightX = clamp(rightX,-60, 60);
