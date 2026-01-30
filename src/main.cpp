@@ -188,10 +188,14 @@ void teamColorSelect(int teamColor)
 
 
 }
+//Some prototypes
+void SetSlot();
+bool currentSlotMajorityEnemy(int);
 
 //Rotate revolver
 void moveSlot()
 {
+  SetSlot(); //Sets the colors in the 2D array for each slot
   revolver.setTimeout(0.5, seconds);
   revolver.setVelocity(100, percent);
   revolver.spinFor(1, rev);
@@ -199,7 +203,7 @@ void moveSlot()
 
 //Outtake function   ********HAVE SOMEONE LOOK AT HOW COLOR SORT MODIFIED THIS*********
 void outTake() {
-  if(!revolver.isSpinning() && !currentSlotMajorityEnemy(teamColor))
+  if((!revolver.isSpinning()) && (!currentSlotMajorityEnemy(teamColor)))
   {
     armUp = true;
     outtake.setVelocity(60, percent);
@@ -320,7 +324,7 @@ bool isCurrentSlotFilled()
     return false;
 }
 
-void changeSlot()
+void SetSlot()
 {
   // SetSlotColor 0
   if(backColorSensor.color() == red)
@@ -355,9 +359,9 @@ void changeSlot()
 //Check for majority color
 bool currentSlotMajorityEnemy(int teamColor) 
 {
-  if((revolverSlots[currentSlot][0] == teamColor && revolverSlots[currentSlot][1] == teamColor)  || //Finds if majority is our team!
-      (revolverSlots[currentSlot][1] == teamColor && revolverSlots[currentSlot][2] == teamColor) ||
-      (revolverSlots[currentSlot][0] == teamColor && revolverSlots[currentSlot][2] == teamColor))
+  if((revolverSlots[currentSlot+3][0] == teamColor && revolverSlots[currentSlot+3][1] == teamColor)  || //Finds if majority is our team!
+      (revolverSlots[currentSlot+3][1] == teamColor && revolverSlots[currentSlot+3][2] == teamColor) ||
+      (revolverSlots[currentSlot+3][0] == teamColor && revolverSlots[currentSlot+3][2] == teamColor))
     return false;
 
   else //If majority is not our team, it is the enemy team!
@@ -415,34 +419,21 @@ void usercontrol()
       teamColorSelect(1); //Blue team selected
     }
 
-    if(Controller1.ButtonRight.pressing())
+    if(Controller1.ButtonA.pressing())
     {
       teamColorSelect(2); //Red team selected
     }
 
 
 
-    // if((Controller1.ButtonL1.pressing() || Controller1.ButtonL2.pressing()) && isSlotFull())
-    //   {
-    //     if(armUp == false) {
-    //     moveSlot();
-    //   }
-     // }
+    //Automatic Rotation
+    if((Controller1.ButtonL1.pressing() || Controller1.ButtonL2.pressing()) && isSlotFull())
+      {
+        if(armUp == false) {
+        moveSlot();
+      }
+     }
 
-    // if(Controller1.ButtonR1.pressing() && !revolver.isSpinning())
-    // {
-    //   thread outtakeThread = thread(outTake);
-    // }
-
-    // if(Controller1.ButtonR2.pressing() && !revolver.isSpinning())
-    // {
-    //   thread outtakeThread = thread(bottomOuttakeFunction);
-    // }
-
-    // if(Controller1.ButtonL2.pressing())
-    // {
-    //   thread unloadThread = thread(unloadAll);
-    // }
 
     if(Controller1.ButtonL2.pressing() && !revolver.isSpinning())
     {
