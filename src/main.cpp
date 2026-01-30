@@ -183,16 +183,44 @@ void moveSlot()
 
 //Outtake function
 void outTake() {
-  if(!revolver.isSpinning())
-  {
-    armUp = true;
-    outtake.setVelocity(60, percent);
-    outtake.spinToPosition(50, degrees, true);
-    outtake.spin(reverse, 10, volt);
-    wait(0.4, sec);
-    outtake.stop(hold);
-    armUp = false;
-    moveSlot();
+  outtake.setVelocity(60, percent);
+  outtake.spinTo(18, degrees, true);
+  wait(0.2, sec);
+  outtake.spinToPosition(0, degrees, true);
+  outtake.stop(hold);
+
+  moveSlot();
+
+  // float pidCompute;
+
+  // PID outtakePID(50, // Proportion
+  //     0.5,            // Integral
+  //     0.01,          // Derivative
+  //     0.1,          // Settle Error
+  //     100,         // Time to Settle (ms)
+  //     2000);      // End Time (ms)
+
+  // if(!revolver.isSpinning())
+  // {
+  //   armUp = true;
+
+  //   while (!outtakePID.isSettled()) { // Desired: 50 degrees
+
+  //     pidCompute = outtakePID.compute(50.0 - outtake.position(degrees));
+  //     pidCompute = clamp(pidCompute, -12.0, 12.0);
+
+  //     if ((pidCompute > 0) && (pidCompute < 1.0)) {
+  //       pidCompute = 1.0;
+  //     } else if (pidCompute < 0 && pidCompute > -1.0) {
+  //       pidCompute = -1.0;
+  //     }
+
+  //     outtake.spin(forward, pidCompute, volt);
+  //     wait(1, sec);
+  //     outtake.spinToPosition(0, degrees, true);
+  //     outtake.stop(hold);
+  //     moveSlot();
+  //   }
 
     // Reset Slot 
     int tempSlotNumber = currentSlot + 3;
@@ -204,7 +232,7 @@ void outTake() {
     revolverSlots[tempSlotNumber][2] = 0;
 
     currentSlot++;
-  }
+  // }
 }
 
 bool isBottomOuttakeRunning = false;
