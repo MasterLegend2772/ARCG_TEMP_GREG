@@ -217,13 +217,7 @@ void moveSlot()
 
 //Outtake function   ********HAVE SOMEONE LOOK AT HOW COLOR SORT MODIFIED THIS*********
 void outTake() {
-  outtake.setVelocity(60, percent);
-  outtake.spinTo(18, degrees, true);
-  wait(0.2, sec);
-  outtake.spinToPosition(0, degrees, true);
-  outtake.stop(hold);
-
-  moveSlot();
+ 
 
   // float pidCompute;
 
@@ -517,6 +511,7 @@ void usercontrol()
   while (1) 
   {
 
+    //To stop geneva fixer from spinning when button is released
     if(!Controller1.ButtonLeft.pressing())
     {
       revolver.spin(forward, 0, volt);
