@@ -35,7 +35,7 @@ motor_group intake = motor_group(intakeLeft, intakeRight);
 //////////// Odometry Sensors ////////////
 //TODO: CHANGE THE NAMES OF THESE
 rotation rotation1 = rotation(PORT9);
-rotation rotation2 = rotation(PORT2);
+rotation rotation2 = rotation(PORT2); //FIXME
 
 /////////////////////////////////////////
 

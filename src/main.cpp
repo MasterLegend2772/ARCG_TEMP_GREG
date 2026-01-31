@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Organization:       Autonomous Robotics Club (ARC)                      */
-/*    Authors:            Coby Smith and Joesph Dye                           */
+/*    Authors:            Coby Smith and Joseph Dye                           */
 /*    Created:            9/9/2024                                            */
 /*    Description:        ARC Template                                        */
 /*                                                                            */
@@ -30,6 +30,11 @@ using namespace vex;
 
   bool armUp = false;
 
+  //Used for color sort
+  const int blueTeam = 1;
+  const int redTeam = 2;
+  int teamColor = 1;
+
 
   Drive chassis
   (
@@ -50,6 +55,9 @@ using namespace vex;
 ///////////////////////// Prototypes /////////////////////////////////
 void setDriveTrainConstants();
 void toggleDriveSpeed();
+void SetSlot();
+bool TopSlotMajorityEnemy(int);
+void transferArrayInfo();
 void Auton_Right1();
 void Auton_Right2();
 void Auton_Right3();
@@ -174,19 +182,40 @@ void autonomous()
 // 1 - Blue
 // 2 - Red
 
-int revolverSlots [6][3];
-int currentSlot = 0;
+// int revolverSlots [6][3];
+// int SlotNum = 0;
+
+// Color Sort (Blue team = 1, Red Team = 2)
+// void teamColorSelect(int teamColor) 
+// {
+//   if(teamColor == 1) //Blue Team
+//   {
+//     Controller1.Screen.clearScreen();
+//     Controller1.Screen.setCursor(0,0);
+//     Controller1.Screen.print("Blue Team Selected");
+//   }
+//   if(teamColor == 2) //Red Team
+//   {
+//     Controller1.Screen.clearScreen();
+//     Controller1.Screen.setCursor(0,0);
+//     Controller1.Screen.print("Red Team Selected");
+//   }
+
+// }
+
+
 
 //Rotate revolver
 void moveSlot()
 {
+  //SetSlot(); //Sets the colors in the 2D array for each slot
+  //transferArrayInfo();
   revolver.setTimeout(0.5, seconds);
   revolver.setVelocity(100, percent);
   revolver.spinFor(1, rev);
-
 }
 
-//Outtake function
+//Outtake function   ********HAVE SOMEONE LOOK AT HOW COLOR SORT MODIFIED THIS*********
 void outTake() {
   outtake.setVelocity(60, percent);
   outtake.spinTo(18, degrees, true);
@@ -226,18 +255,29 @@ void outTake() {
   //     outtake.stop(hold);
   //     moveSlot();
   //   }
+  if((!revolver.isSpinning())) //&& (!TopSlotMajorityEnemy(teamColor)))
+  {
+    armUp = true;
+    outtake.setVelocity(100, percent);
+    outtake.spinToPosition(80, degrees, true);
+    outtake.spinToPosition(0, degrees, true);
+    wait(0.2,seconds);
+    outtake.stop(hold);
+    armUp = false;
+    moveSlot();
 
-    // Reset Slot 
-    int tempSlotNumber = currentSlot + 3;
-    if(tempSlotNumber > 6 )
-      tempSlotNumber = tempSlotNumber - 6;
-    
-    revolverSlots[tempSlotNumber][0] = 0;
-    revolverSlots[tempSlotNumber][1] = 0;
-    revolverSlots[tempSlotNumber][2] = 0;
+  // Reset Slot 
+    // revolverSlots[3][0] = 0;
+    // revolverSlots[3][1] = 0;
+    // revolverSlots[3][2] = 0;
 
-    currentSlot++;
-  // }
+  }
+  // else {
+  //   if(TopSlotMajorityEnemy(teamColor)) 
+  //   {
+  //     moveSlot();
+  //   }
+  //  }
 }
 
 bool isBottomOuttakeRunning = false;
@@ -258,9 +298,9 @@ void bottomOuttakeFunction()
     armUp = false;
     isBottomOuttakeRunning = false;
 
-    revolverSlots[currentSlot][0] = 0;
-    revolverSlots[currentSlot][1] = 0;
-    revolverSlots[currentSlot][2] = 0;
+    // revolverSlots[0][0] = 0;
+    // revolverSlots[0][1] = 0;
+    // revolverSlots[0][2] = 0;
   }
 }
 
@@ -288,30 +328,20 @@ void unloadAll() {
       }
 }
 
-// Function to Unload Specific Color --[MUST TEST]--
-void unload(color c) {
-  for (int i = 0; i < 6; i++) {
-    if (revolverSlots[i][0] == c || revolverSlots[i][1] == c || revolverSlots[i][2] == c) {
-      while (currentSlot != i) {
-        moveSlot();
-        waitUntil(!revolver.isSpinning());
-      }
-
-      outTake();
-    }
-  }
-}
 
 // Check Canister
 bool isSlotFull()
 {
-  if((frontColorSensor.hue() <= 20 && frontColorSensor.hue() >= 0) ||
-    (frontColorSensor.hue() <= 170 && frontColorSensor.hue() >= 200) &&
-    (middleColorSensor.hue() <= 20 && middleColorSensor.hue() >= 0) ||
-    (middleColorSensor.hue() <= 170 && middleColorSensor.hue() >= 200) &&
-    (backColorSensor.hue() <= 20 && backColorSensor.hue() >= 0) || 
-    (backColorSensor.hue() <= 170 && backColorSensor.hue() >= 200)
-    )
+  //Says, "If frontSensor is between 0 and 20(red), or frontSensor is between 170 and 200(blue)"
+  //AND "MiddleSensor is red or blue"
+  //AND "BackSensor is red or blue"
+  //Then return that Slot is full (true)
+  if((((frontColorSensor.hue() <= 20 && frontColorSensor.hue() >= 0)) ||
+    ((frontColorSensor.hue() <= 170 && frontColorSensor.hue() >= 200))) &&
+    (((middleColorSensor.hue() <= 20 && middleColorSensor.hue() >= 0)) ||
+    ((middleColorSensor.hue() <= 170 && middleColorSensor.hue() >= 200))) &&
+    (((backColorSensor.hue() <= 20 && backColorSensor.hue() >= 0)) || 
+    ((backColorSensor.hue() <= 170 && backColorSensor.hue() >= 200))))
     {
       Brain.Screen.setCursor(1,1);
       Brain.Screen.print("Is Full");
@@ -321,46 +351,17 @@ bool isSlotFull()
     return false;
 }
 
-// Check Revolver
-bool isCurrentSlotFilled()
-{
-  if(revolverSlots[currentSlot][0] != 0 || revolverSlots[currentSlot][1] != 0 || revolverSlots[currentSlot][2] != 0)
-    return true;
-  else
-    return false;
-}
 
-void changeSlot()
-{
-  // SetSlotColor 0
-  if(backColorSensor.color() == red)
-    revolverSlots[currentSlot][0] = 2;
-  else
-    revolverSlots[currentSlot][0] = 1;
-  
-  // SetSlotColor 1
+// // Check Revolver
+// bool isBottomSlotFilled()
+// {
+//   if(revolverSlots[0][0] != 0 || revolverSlots[0][1] != 0 || revolverSlots[0][2] != 0)
+//     return true;
+//   else
+//     return false;
+// }
 
-  if(middleColorSensor.color() == red)
-    revolverSlots[currentSlot][0] = 2;
-  else
-    revolverSlots[currentSlot][0] = 1;
 
-  // SetSlotColor 2
-
-  if(frontColorSensor.color() == red)
-    revolverSlots[currentSlot][0] = 2;
-  else
-    revolverSlots[currentSlot][0] = 1;
-
-  // Change Current Slot
-  if(currentSlot == 5)
-    currentSlot = 0;
-  else
-    currentSlot++;
-  
-  wait(300, msec);
-  moveSlot();
-}
 
 void moveIntake()
 {
@@ -370,10 +371,110 @@ void moveIntake()
   }
 }
 
-void intakeMoveSlot()
+
+/******************************************************************
+ * Function: FixGeneva()
+ * Purpose: Reverse Rotate Geneva while button is pressed
+*****************************************************************/
+void FixGeneva() 
 {
-  
+  if(!revolver.isSpinning())
+    revolver.spin(reverse, 8, volt);
 }
+//******************************************************************************/
+//COLOR SORTING EVERYTHING!!!!!!!!!!!!
+
+// void transferArrayInfo() 
+// {
+
+//   int tempArr[6][3] = {
+//         {0, 0, 0},
+//         {0, 0, 0},
+//         {0, 0, 0},
+//         {0, 0, 0},
+//         {0, 0, 0},
+//         {0, 0, 0}
+//     };
+
+//   //Shifts everything in revolverSlots by 1 in tempArr
+//   for(int i = 0; i < 6; i++)
+//   {
+//     for(int j = 0; j < 3; j++)
+//     {
+//       if(i == 5)
+//       {
+//         tempArr[0][j] = revolverSlots[i][j];
+//       }
+//       else
+//         tempArr[i+1][j] = revolverSlots[i][j];
+//     }
+
+//     //Puts shifted temp into revolverSlots to complete the transfer
+//     for(int i = 0; i < 6; i++) 
+//     {
+//       for(int j = 0; j < 3; j++) 
+//       {
+//         revolverSlots[i][j] = tempArr[i][j];
+//       }
+//     }
+//   }
+
+// }
+
+
+/******************************************************************
+ * Function: SetSlot()
+ * Purpose: Assign 0, 1, or 2 to each sensor within slots 0-5
+*****************************************************************/
+
+// void SetSlot()
+// {
+//   // SetSlotColor 0
+//   if((backColorSensor.hue() <= 20) && (backColorSensor.hue() >= 0))
+//     revolverSlots[0][0] = 2;
+//   else if((backColorSensor.hue() <= 170) && (backColorSensor.hue() >= 200))
+//     revolverSlots[0][0] = 1;
+//   else
+//     revolverSlots[0][0] = 0;
+  
+//   // SetSlotColor 1                        
+
+//   if((middleColorSensor.hue() <= 20) && (middleColorSensor.hue() >= 0))
+//     revolverSlots[0][1] = 2;
+//   else if((middleColorSensor.hue() <= 170) && (middleColorSensor.hue() >= 200))
+//     revolverSlots[0][1] = 1;
+//   else
+//     revolverSlots[0][1] = 0;
+
+//   // SetSlotColor 2
+
+//   if((frontColorSensor.hue() <= 20) && (frontColorSensor.hue() >= 0))
+//     revolverSlots[0][2] = 2;
+//   else if((frontColorSensor.hue() <= 170) && (frontColorSensor.hue() >= 200))
+//     revolverSlots[0][2] = 1;
+//   else
+//     revolverSlots[0][2] = 0;
+  
+//   wait(300, msec);
+  
+// }
+
+/******************************************************************
+ * Function: TopSlotMajorityEnemy()
+ * Purpose: Check if the top Slot's majority is the enemy color
+*****************************************************************/
+// bool TopSlotMajorityEnemy(int teamColor) 
+// {
+//   if(((revolverSlots[3][0] == teamColor) && (revolverSlots[3][1] == teamColor))  || //Finds if majority is our team!
+//       ((revolverSlots[3][1] == teamColor) && (revolverSlots[3][2] == teamColor)) ||
+//       ((revolverSlots[3][0] == teamColor) && (revolverSlots[3][2] == teamColor)))
+//     return false;
+
+//   else //If majority is not our team, it is the enemy team!
+//     return true;
+// }
+
+/*************************************************************************************/
 
 void setBoost() {
   if (!boost) {
@@ -394,6 +495,9 @@ void usercontrol()
   Brain.Screen.clearScreen();
   bool isSpinning = false;
 
+  //Team select function - note: this changes depending on the slot
+  //teamColorSelect(teamColor); // Team selected
+
   Controller1.ButtonUp.pressed(rise);
   Controller1.ButtonDown.pressed(fall);
   backColorSensor.setLight(ledState::on);
@@ -406,11 +510,19 @@ void usercontrol()
   Controller1.ButtonL1.pressed(moveIntake);
   Controller1.ButtonL2.pressed(moveIntake);
 
+  Controller1.ButtonLeft.pressed(FixGeneva);
+
+
   Controller1.ButtonX.pressed(setBoost);
 
   // User control code here, inside the loop
   while (1) 
   {
+
+    if(!Controller1.ButtonLeft.pressing())
+    {
+      revolver.spin(forward, 0, volt);
+    }
 
     if(Controller1.ButtonB.pressing() && !revolver.isSpinning())
     {
@@ -426,21 +538,19 @@ void usercontrol()
     //   }
      // }
 
-    // if(Controller1.ButtonR1.pressing() && !revolver.isSpinning())
-    // {
-    //   thread outtakeThread = thread(outTake);
-    // }
+  
 
-    // if(Controller1.ButtonR2.pressing() && !revolver.isSpinning())
-    // {
-    //   thread outtakeThread = thread(bottomOuttakeFunction);
-    // }
+    //Automatic Rotation
+    if((Controller1.ButtonL1.pressing() || Controller1.ButtonL2.pressing()) && isSlotFull())
+      {
+        if(armUp == false) {
+        moveSlot();
+      }
+     }
 
-    // if(Controller1.ButtonL2.pressing())
-    // {
-    //   thread unloadThread = thread(unloadAll);
-    // }
 
+
+     //
     if(Controller1.ButtonL2.pressing() && !revolver.isSpinning())
     {
       matchLoader.set(true);
@@ -576,9 +686,7 @@ void Auton_Right1() { // Strategy: Score (Right)
     wait(5, sec);
 
 
-    chassis.brake();    
-    // Load Alliance Blocks
-    // Score Alliance Blocks (either in BOTH Long && ONE Center Goals, OR ONE Long && BOTH Center Goals)
+    chassis.brake();
 }
 
 
