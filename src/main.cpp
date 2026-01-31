@@ -542,17 +542,36 @@ void Auton_Right1() {
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(1.5, sec);
 
-// Drive to Center/Park Zone to EXCHANGE Blocks
-    // Driving to Center needs tuning;
-    // Sometimes hits Park Zone.
-    chassis.driveDistance(-52, 3.0, 12.0, false);
+// Drive to RIGHT Long Goal to SCORE
+    // Needs to be tested, tuned, finalized
+    chassis.driveDistance(-15, 3.0, 12.0, false);
     wait(0.25, sec);
-    chassis.turn(180, 9.0);
+    chassis.turn(-90, 9.0);
     std::cout << inertial1.heading() << std::endl;
+    chassis.driveDistance(22, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    rise();
+    wait(0.5, sec);
+    outTake();
+    std::cout << "Scoring in Left Long Goal" << std::endl;
+    wait(2, sec);
 
-// EXCHANGE Blocks with Other Robot ?? (May remove)
+// Drive to Center Goal
+    chassis.driveDistance(-5, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    chassis.turn(-90, 9.0);
+    std::cout << inertial1.heading() << std::endl;
+    chassis.driveDistance(24, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    chassis.turn(45, 9.0);
+    std::cout << inertial1.heading() << std::endl;
+    chassis.driveDistance(10, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    outTake();
+    wait(5, sec);
+
+
     chassis.brake();
-    unload(blue);
     
     // Load Alliance Blocks
     // Score Alliance Blocks (either in BOTH Long && ONE Center Goals, OR ONE Long && BOTH Center Goals)
@@ -576,28 +595,62 @@ void Auton_Right4() {
 
 /// @brief Auton Left Slot 1 [BLUE]- Write code for route within this function.
 void Auton_Left1() {
-    Brain.Screen.print("EXECUTING: Auton 1 - RIGHT");
-    
-    /*
-        -- Fix:: Settle Time && Voltage (drive/turn stoppage and step timing)
-        -- Modify:: drive/turn functions (include: minVoltage, precedence)
-        -- Add:: Additional tests and hardware as needed (finalize 24" and 15" ASAP)
-    */
-    chassis.driveDistance(38, 3.0, 12.0, false);
-    chassis.turnToAngle(-90, 3.0, 12.0, false);
-    chassis.driveDistance(18, 3.0, 12.0, false);
+    // Initial Diagnostics
+    std::cout << std::endl << std::endl << std::endl;
+    std::cout << "_______________________________" << std::endl;
+    std::cout << std::setw(27) << "EXECUTING: Auton Left" << std::endl;
+    std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
+    std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
+
+// Drive from Origin to Loader (Right)
+    chassis.driveDistance(34, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.25, sec);
+    chassis.turnToAngle(-90, 3.0, 9.0, false);
+    std::cout << inertial1.heading() << std::endl;
+    wait(0.25, sec);
     moveIntake();
+
+// Load Blocks from Loader (including: Extra given Loader Blocks [6])
+    // Not loading reliably, needs tuning && other systems
+    chassis.driveDistance(11, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(2, sec); // Adjust time as needed for optimal loading
+
+// Reverse to Load Side Blocks [2]
+    chassis.driveDistance(-12, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.25, sec);
+    chassis.turnToAngle(0, 3.0, 9.0, false);
+    std::cout << inertial1.heading() << std::endl;
+    wait(0.25, sec);
+    // Loads BOTH Side Blocks consistently && reliably
+    chassis.driveDistance(12.5, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(1.5, sec);
+
+// Drive to LEFT Long Goal to SCORE
+    // Needs to be tested, tuned, finalized
+    chassis.driveDistance(-15, 3.0, 12.0, false);
+    wait(0.25, sec);
+    chassis.turn(90, 9.0);
+    std::cout << inertial1.heading() << std::endl;
+    chassis.driveDistance(22, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    rise();
+    wait(0.5, sec);
+    outTake();
+    std::cout << "Scoring in Left Long Goal" << std::endl;
     wait(5, sec);
-    chassis.driveDistance(-16, 3.0, 12.0, false);
-    chassis.turnToAngle(0, 3.0, 12.0, false);
-    chassis.driveDistance(26, 3.0, 12.0, false);
-    chassis.turnToAngle(170, 3.0, 12.0, false);
-    chassis.driveDistance(48, 3.0, 12.0, false);
-    chassis.brake();
-    unload(red);
-    // Load Blue Blocks
-    // Grab Blue Park Zone Blocks
-    // Park
+
+// Drive to Park Zone & Park
+    // fall();
+    // chassis.driveDistance(-5, 3.0, 12.0, false);
+    // chassis.turn(145, 9.0);
+    // chassis.driveDistance(45, 3.0, 12.0, false);
+    // chassis.brake();
+    
+    // For AUTON WIN POINT
 }
 
 
