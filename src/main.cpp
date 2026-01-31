@@ -30,6 +30,7 @@ using namespace vex;
 
   bool armUp = false;
 
+
   Drive chassis
   (
     motor_group(L1, L2, L3, L4), // Left drive train motors
@@ -126,8 +127,12 @@ void preAuton()
 void autonomous() 
 {
   isInAuton = true;
+
+  extendo.set(true);
+
   chassis.setPosition(0,0,0);
   setDriveTrainConstants();
+  
   Auton_Right1();
   /* Add switch for input button mapping
   

@@ -37,6 +37,7 @@ extern inertial inertial1;
 extern led liftR;
 extern led liftL;
 extern led matchLoader;
+extern led extendo;
 
 extern optical backColorSensor;
 extern optical middleColorSensor;
