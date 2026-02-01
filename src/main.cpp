@@ -38,9 +38,9 @@ using namespace vex;
 
   Drive chassis
   (
-    motor_group(L1, L2, L3, L4), // Left drive train motors
+    motor_group(L1, L2, L3, L4), // Left drive train motors 
     motor_group(R1, R2, R3, R4), // Right drive train motors
-    PORT6,               // Inertial Sensor Port
+    PORT8,               // Inertial Sensor Port
     2.75,              // The diameter size of the wheel in inches
     1,                   // 
     velocity,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
@@ -148,7 +148,6 @@ void autonomous()
   chassis.setPosition(0,0,0);
   setDriveTrainConstants();
 
-  Auton_Right1();
   /* Add switch for input button mapping
   
   OR link specific robots to Autons
@@ -521,6 +520,7 @@ void usercontrol()
   {
     extendo.set(true);
 
+    //To stop geneva fixer from spinning when button is released
     if(!Controller1.ButtonLeft.pressing())
     {
       revolver.spin(forward, 0, volt);
