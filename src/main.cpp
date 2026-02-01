@@ -629,9 +629,8 @@ void Auton_Right1() { // Strategy: Score (Right)
     std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
 
 // Drive from Origin to LOADER (Right)
-    // chassis.driveDistance(-2, 3.0, 12.0, false);
-    // chassis.turnToAngle(-90, 3.0, 9.0, false);
     std::cout << inertial1.heading() << std::endl;
+    chassis.turn(190, 9.0);
     chassis.driveDistance(36.5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
@@ -642,7 +641,7 @@ void Auton_Right1() { // Strategy: Score (Right)
 
 // Load Blocks from Loader (including: Extra given Loader Blocks [6])
     // Not loading reliably, needs tuning && other systems
-    chassis.driveDistance(14, 3.0, 12.0, false);
+    chassis.driveDistance(5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(2, sec); // Adjust time as needed for optimal loading
 
@@ -765,9 +764,9 @@ void Auton_Left1() { // Strategy: Score (Left)
     std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
 
 // Drive from Origin to LOADER (Left)
-    // chassis.driveDistance(-2, 3.0, 12.0, false);
-    // chassis.turnToAngle(90, 3.0, 9.0, false);
-    chassis.driveDistance(34, 3.0, 12.0, false);
+    std::cout << inertial1.heading() << std::endl;
+    chassis.turn(-190, 9.0);
+    chassis.driveDistance(36.5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
     chassis.turn(-90, 9.0);
@@ -777,7 +776,7 @@ void Auton_Left1() { // Strategy: Score (Left)
 
 // Load Blocks from Loader (including: Extra given Loader Blocks [6])
     // Not loading reliably, needs tuning && other systems
-    chassis.driveDistance(12.5, 3.0, 12.0, false);
+    chassis.driveDistance(5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(2, sec); // Adjust time as needed for optimal loading
 
