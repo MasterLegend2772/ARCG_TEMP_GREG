@@ -131,12 +131,19 @@ void preAuton()
   Brain.Screen.clearScreen();
 }
 
+void rise();
+void fall();
+
 /// @brief Runs during the Autonomous Section of the Competition
 void autonomous() 
 {
   isInAuton = true;
 
+  rise();
   extendo.set(true);
+  wait(0.25, sec);
+  fall();
+  wait(0.25, sec);
 
   chassis.setPosition(0,0,0);
   setDriveTrainConstants();
@@ -210,20 +217,24 @@ void moveSlot()
 {
   //SetSlot(); //Sets the colors in the 2D array for each slot
   //transferArrayInfo();
-  revolver.setTimeout(0.5, seconds);
+  revolver.setTimeout(0.55, seconds);
   revolver.setVelocity(100, percent);
   revolver.spinFor(1, rev);
 }
 
 //Outtake function   ********HAVE SOMEONE LOOK AT HOW COLOR SORT MODIFIED THIS*********
 void outTake() {
-  outtake.setVelocity(60, percent);
-  outtake.spinTo(18, degrees, true);
-  wait(0.2, sec);
-  outtake.spinToPosition(0, degrees, true);
-  outtake.stop(hold);
+  if (!revolver.isSpinning()) {\
+    armUp = true;
 
-  moveSlot();
+    outtake.setVelocity(50, percent);
+    outtake.spinToPosition(90, degrees, true);
+    // outtake.spinToPosition(0, degrees, false);
+    outtake.spinFor(reverse, 1, sec);
+    outtake.stop(hold);
+    armUp = false;
+    moveSlot();
+  }
 
   // float pidCompute;
 
@@ -255,23 +266,13 @@ void outTake() {
   //     outtake.stop(hold);
   //     moveSlot();
   //   }
-  if((!revolver.isSpinning())) //&& (!TopSlotMajorityEnemy(teamColor)))
-  {
-    armUp = true;
-    outtake.setVelocity(100, percent);
-    outtake.spinToPosition(80, degrees, true);
-    outtake.spinToPosition(0, degrees, true);
-    wait(0.2,seconds);
-    outtake.stop(hold);
-    armUp = false;
-    moveSlot();
 
-  // Reset Slot 
-    // revolverSlots[3][0] = 0;
-    // revolverSlots[3][1] = 0;
-    // revolverSlots[3][2] = 0;
+  // // Reset Slot 
+  //   // revolverSlots[3][0] = 0;
+  //   // revolverSlots[3][1] = 0;
+  //   // revolverSlots[3][2] = 0;
 
-  }
+  // }
   // else {
   //   if(TopSlotMajorityEnemy(teamColor)) 
   //   {
@@ -518,6 +519,7 @@ void usercontrol()
   // User control code here, inside the loop
   while (1) 
   {
+    extendo.set(true);
 
     if(!Controller1.ButtonLeft.pressing())
     {
@@ -630,7 +632,7 @@ void Auton_Right1() { // Strategy: Score (Right)
     // chassis.driveDistance(-2, 3.0, 12.0, false);
     // chassis.turnToAngle(-90, 3.0, 9.0, false);
     std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(34, 3.0, 12.0, false);
+    chassis.driveDistance(36.5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
     chassis.turn(90, 9.0);
@@ -640,29 +642,29 @@ void Auton_Right1() { // Strategy: Score (Right)
 
 // Load Blocks from Loader (including: Extra given Loader Blocks [6])
     // Not loading reliably, needs tuning && other systems
-    chassis.driveDistance(12.5, 3.0, 12.0, false);
+    chassis.driveDistance(14, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(2, sec); // Adjust time as needed for optimal loading
 
 // Reverse to Load Side Blocks [2]
-    chassis.driveDistance(-12, 3.0, 12.0, false);
+    chassis.driveDistance(-14.5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
     chassis.turn(-90, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    wait(0.25, sec);
+    wait(0.35, sec);
     // Loads BOTH Side Blocks consistently && reliably
-    chassis.driveDistance(12.5, 3.0, 12.0, false);
+    chassis.driveDistance(21.5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(1.5, sec);
 
 // Drive to RIGHT Long Goal to SCORE
     // Needs to be tested, tuned, finalized
-    chassis.driveDistance(-15, 3.0, 12.0, false);
+    chassis.driveDistance(-20, 3.0, 12.0, false);
     wait(0.25, sec);
     chassis.turn(-90, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(22, 3.0, 12.0, false);
+    chassis.driveDistance(16.5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     rise();
     wait(0.5, sec);
@@ -676,11 +678,11 @@ void Auton_Right1() { // Strategy: Score (Right)
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     chassis.turn(-90, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(24, 3.0, 12.0, false);
+    chassis.driveDistance(22, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     chassis.turn(45, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(10, 3.0, 12.0, false);
+    chassis.driveDistance(13, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     outTake();
     wait(5, sec);
@@ -801,7 +803,7 @@ void Auton_Left1() { // Strategy: Score (Left)
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     rise();
     wait(0.5, sec);
-    outTake();
+    outTake;
     std::cout << "Scoring in Left Long Goal" << std::endl;
     wait(3, sec);
     fall();
