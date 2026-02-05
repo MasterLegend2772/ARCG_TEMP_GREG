@@ -148,6 +148,8 @@ void autonomous()
   chassis.setPosition(0,0,0);
   setDriveTrainConstants();
 
+  Auton_Right1();
+
   /* Add switch for input button mapping
   
   OR link specific robots to Autons
@@ -492,6 +494,15 @@ void usercontrol()
   isInAuton = true;
   extendo.set(true);
 
+  R1.setBrake(coast);
+  R2.setBrake(coast);
+  R3.setBrake(coast);
+  R4.setBrake(coast);
+  L1.setBrake(coast);
+  L2.setBrake(coast);
+  L3.setBrake(coast);
+  L4.setBrake(coast);
+
   Brain.Screen.clearScreen();
   bool isSpinning = false;
 
@@ -602,7 +613,7 @@ void setDriveTrainConstants()
         10.0, // Kd - Derivative Constant
         1.0, // Settle Error
         100, // Time to Settle
-        25000 // End Time
+        1500 // End Time
     );
 
     // Set the Turn PID values for the DriveTrain
@@ -610,9 +621,9 @@ void setDriveTrainConstants()
         0.504,        // Kp - Proportion Constant
         0.0,         // Ki - Integral Constant
         4.05,       // Kd - Derivative Constant 
-        1.0,       // Settle Error
+        3.0,       // Settle Error
         500,      // Time to Settle
-        25000     // End Time
+        1500     // End Time
     );
     
 }
@@ -630,12 +641,12 @@ void Auton_Right1() { // Strategy: Score (Right)
 
 // Drive from Origin to LOADER (Right)
     std::cout << inertial1.heading() << std::endl;
-    chassis.turn(190, 9.0);
-    chassis.driveDistance(36.5, 3.0, 12.0, false);
+    chassis.driveDistance(32, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
-    chassis.turn(90, 9.0);
+    chassis.turn(-45, 9.0);
     std::cout << inertial1.heading() << std::endl;
+    chassis.driveDistance(36.5, 3.0, 12.0, false);
     wait(0.25, sec);
     moveIntake();
 
@@ -685,61 +696,69 @@ void Auton_Right1() { // Strategy: Score (Right)
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     outTake();
     wait(5, sec);
-
-
-    chassis.brake();
 }
 
 
 /// @brief Auton Right Slot 2 [RED] - Write code for route within this function.
-void Auton_Right2() { // Strategy: Center Horde
-    Brain.Screen.print("EXECUTING: Auton 2 - RIGHT");
+void Auton_Right2() { // Strategy: AUTON SKILLS (Right)
+    Brain.Screen.print("EXECUTING: Auton SKILLS - RIGHT");
 
 // Initial Diagnostics
     std::cout << std::endl << std::endl << std::endl;
     std::cout << "_______________________________" << std::endl;
-    std::cout << std::setw(27) << "EXECUTING: Auton Right - 2" << std::endl;
+    std::cout << std::setw(27) << "EXECUTING: Auton Skills - Right" << std::endl;
     std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
     std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
 
-// Drive from Origin to SIDE BLOCKS (Right)
-    chassis.driveDistance(48, 3.0, 12.0, false);
+// Back from Origin to Store Park Zone BLOCKS (Right)
+    chassis.driveDistance(-18, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
-
-
-// Load Side Blocks [2]
     moveIntake();
-    wait(2, sec);
+    chassis.driveDistance(24, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.25, sec);
+    // Check Consistency of INTAKING / STORING Park Zone Blocks {+4 Blue}
 
-// Drive to Center for Blocks [6, 3 of each color]
-    // NOT Auton Line Blocks [4, 2 of each color] >> Get during Driver Control
-    // Needs to be tested, tuned, finalized
-    chassis.driveDistance(-42, 3.0, 12.0, false);
+// Park Zone to LOAD Left Loader Blocks                 {+3 Blue, +3 Red}
+    chassis.driveDistance(40, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
     chassis.turn(-90, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(48, 3.0, 12.0, false);
+    wait(0.25, sec);
+    chassis.driveDistance(4, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    moveIntake();
+
+// Left Loader to Load Side Blocks                      {+2 Blue}
+    chassis.driveDistance(-16, 3.0, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.25, sec);
     chassis.turn(90, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(12, 3.0, 9.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(1, sec);
 
-// Return to Safe Position
-    wait(0.5, sec);
-    chassis.driveDistance(-6, 3.0, 12.0, false);
+// Drive to Upper Center Goal to SCORE                  {+7 Blue}
+    // Needs to be tested, tuned, finalized
+    chassis.driveDistance(-32, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    chassis.turn(-90, 9.0);
+    wait(0.25, sec);
+    chassis.turn(-160, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(-24, 3.0, 12.0, false);
+    chassis.driveDistance(64, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    std::cout << "Horded Successfully" << std::endl;
+    // Outtake Blue Blocks
+    rise();
+    wait(0.5, sec);
+    outTake();
+    wait(3, sec);
+    fall();
+    // TEST
+
+// To Be Discussed, Tuned, Finalized
 
 
-    chassis.brake();
-    // Horde Opponent Blocks
+    // AUTON SKILL RIGHT (FLASH Park Zone)
 }
 
 /// @brief Auton Right Slot 3 [BLUE] - Write code for route within this function.
@@ -765,7 +784,6 @@ void Auton_Left1() { // Strategy: Score (Left)
 
 // Drive from Origin to LOADER (Left)
     std::cout << inertial1.heading() << std::endl;
-    chassis.turn(-190, 9.0);
     chassis.driveDistance(36.5, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
@@ -812,63 +830,36 @@ void Auton_Left1() { // Strategy: Score (Left)
     // chassis.turn(145, 9.0);
     // chassis.driveDistance(45, 3.0, 12.0, false);
 
-
-    chassis.brake();
     
     // For AUTON WIN POINT
 }
 
 
 /// @brief Auton Left Slot 2 [RED] - Write code for route within this function.
-void Auton_Left2() { // Strategy: Center Horde
-    Brain.Screen.print("EXECUTING: Auton 2 - RIGHT");
+void Auton_Left2() { // Strategy: AUTON SKILLS (Left)
+    Brain.Screen.print("EXECUTING: Auton SKILLS - LEFT");
 
 // Initial Diagnostics
     std::cout << std::endl << std::endl << std::endl;
     std::cout << "_______________________________" << std::endl;
-    std::cout << std::setw(27) << "EXECUTING: Auton Right - 2" << std::endl;
+    std::cout << std::setw(27) << "EXECUTING: Auton Skills - Left" << std::endl;
     std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
     std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
-
-// Drive from Origin to SIDE BLOCKS (Right)
-    chassis.driveDistance(48, 3.0, 12.0, false);
+// Drive from Origin to SIDE BLOCKS (Left)
+    chassis.driveDistance(-8, 3.0, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.25, sec);
-
-
-// Load Side Blocks [2]
+    chassis.turn(42, 9.0);
+    std::cout << inertial1.heading() << std::endl;
     moveIntake();
-    wait(2, sec);
-
-// Drive to Center for Blocks [6, 3 of each color]
-    // NOT Auton Line Blocks [4, 2 of each color] >> Get during Driver Control
-    // Needs to be tested, tuned, finalized
-    chassis.driveDistance(-42, 3.0, 12.0, false);
+    chassis.driveDistance(84, 3.0, 12.0, false);
     wait(0.25, sec);
-    chassis.turn(90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(48, 3.0, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    chassis.turn(-90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    moveIntake();
-    chassis.driveDistance(12, 3.0, 9.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    // TEST
 
-// Return to Safe Position
-    wait(0.5, sec);
-    chassis.driveDistance(-6, 3.0, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    chassis.turn(90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(-24, 3.0, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+// To Be Discussed, Tuned, Finalized
 
-    
-    std::cout << "Horded Successfully" << std::endl;
-    std::cout << "Chassis Protected" << std::endl;
-    chassis.brake();
-    // Horde Opponent Blocks
+
+    // AUTON SKILL RIGHT (FLASH Park Zone)
 }
 
 /// @brief Auton Left Slot 3 [BLUE] - Write code for route within this function.
