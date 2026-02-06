@@ -85,17 +85,8 @@ void Drive::setTurnConstants(float Kp, float Ki, float Kd, float settleError, fl
 
 void Drive::arcade()
 {
-    int leftY = 0;
-    int rightX = 0;
-    int arcadePower = 2;
-    if (Controller1.Axis3.position(percent) >= 0)
-        leftY = pow(Controller1.Axis3.position(percent), arcadePower)/(pow(10, arcadePower));
-    else                                                                                                                                                                                                                                                                                                                                                                                                                  
-        leftY = pow(Controller1.Axis3.position(percent), arcadePower)/ -1 *(pow(10, arcadePower));
-    if (Controller1.Axis1.position(percent) >= 0)
-        rightX = pow(Controller1.Axis1.position(percent), arcadePower)/(pow(10, arcadePower));
-    else
-        rightX = pow(Controller1.Axis1.position(percent), arcadePower)/ -1 * (pow(10, arcadePower));
+    int leftY = Controller1.Axis3.position(percent);
+    int rightX = Controller1.Axis1.position(percent);
 
     leftDrive.spin(forward, leftY+rightX, percent);
     rightDrive.spin(forward, leftY-rightX, percent);
@@ -243,10 +234,10 @@ void Drive::driveDistance(float distance, float minVoltage, float maxVoltage, bo
         linearOutput = clamp(linearOutput, -maxVoltage, maxVoltage);
         angularOutput = clamp(angularOutput, -maxVoltage, maxVoltage);
 
-        if(linearOutput > 0 && linearOutput < 1)
-            linearOutput = 1;
-        else if(linearOutput < 0 && linearOutput > -1)
-            linearOutput = -1;
+        if(linearOutput > 0 && linearOutput < minVoltage)
+            linearOutput = minVoltage;
+        else if(linearOutput < 0 && linearOutput > -minVoltage)
+            linearOutput = -minVoltage;
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
@@ -295,10 +286,10 @@ void Drive::turnToAngle(float angle, float minVoltage, float maxVoltage, bool pr
         float error = inTermsOfNegative180To180(inertial1.heading()-angle);
         float output = turnPID.compute(error);
         output = clamp(output, -maxVoltage, maxVoltage);
-        if(output > 0 && output < 1.5)
-            output = 1.5;
-        else if(output < 0 && output > -1.5)
-            output = -1.5;
+        if(output > 0 && output < minVoltage)
+            output = minVoltage;
+        else if(output < 0 && output > -minVoltage)
+            output = -minVoltage;
         driveMotors(-output, output);
         task::sleep(10);
     }while(!turnPID.isSettled());
