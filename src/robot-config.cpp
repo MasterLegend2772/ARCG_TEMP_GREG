@@ -47,7 +47,7 @@ inertial inertial1 = inertial(PORT8);
 
 led liftR = led(Brain.ThreeWirePort.A);
 led liftL = led(Brain.ThreeWirePort.B);
-led matchLoader = led(Brain.ThreeWirePort.H);
+led matchLoader = led(Brain.ThreeWirePort.C);
 led extendo = led(Brain.ThreeWirePort.G);
 
 /////////////////////////////////////

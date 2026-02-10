@@ -376,9 +376,6 @@ void moveIntake()
 void matchLoad() {
   matchLoader.set(true);
   moveIntake();
-  wait(1.5, sec);
-  intake.stop(hold);
-  matchLoader.set(false);
 }
 
 
@@ -531,7 +528,7 @@ void usercontrol()
   Controller1.ButtonR2.pressed(bottomOuttakeFunction);
 
   Controller1.ButtonL1.pressed(moveIntake);
-  Controller1.ButtonL2.pressed(moveIntake); // Change to {matchLoad} Function once Match Loader added
+  Controller1.ButtonL2.pressed(matchLoad); // Change to {matchLoad} Function once Match Loader added
 
   Controller1.ButtonLeft.pressed(FixGeneva);
 
@@ -582,6 +579,7 @@ void usercontrol()
     }else
     {
       matchLoader.set(false);
+    
       if(!Controller1.ButtonL1.pressing() && !Controller1.ButtonR2.pressing())
       {
         intake.spin(reverse, 0, volt);
@@ -646,7 +644,7 @@ void setDriveTrainConstants()
 
 // Auton SKILLS Routes
 /// @brief Auton SKILLS Right [RED] - 15 Inch Robot
-void AutonSkills_Right() { // Strategy: AUTON SKILLS (Right)
+void AutonSkills_Right() { // Strategy: AUTON SKILLS (Right) {MIRROR Skills - Right}
     Brain.Screen.print("EXECUTING: Auton SKILLS - RIGHT");
 
 // Initial Diagnostics
@@ -656,69 +654,102 @@ void AutonSkills_Right() { // Strategy: AUTON SKILLS (Right)
     std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
     std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
 
-// Back from Origin to Side Blocks (Right)  {2 Blue}
+// Origin to Loader (3 Red, 3 Blue)
     chassis.driveDistance(-24, minVoltage, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.1, sec);
-    chassis.turn(198, 9.0);
+    chassis.turn(-82, 9.0);
     std::cout << inertial1.heading() << std::endl;   
     wait(0.2, sec);
     moveIntake();
     chassis.driveDistance(16, minVoltage, 12.0, false);
+    matchLoad();
+    std::cout << "Match Loading" << std::endl;
+    wait(1.5, sec);
+    moveSlot();
+    wait(0.5, sec);
+    moveSlot();
+    matchLoader.set(false);
+
+// Loader to Side Blocks (2 Blue)
+    chassis.driveDistance(-16, minVoltage, 12.0, false); 
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(1.5, sec); // Adjust time as needed for OPTIMAL LOADING once consistent
-  
-// Reverse && Drive to Side Blocks (Left)   {2 Blue}
-    chassis.driveDistance(-12, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.2, sec);
-    chassis.turn(180, 9.0);
+    wait(0.1, sec);
+    chassis.turn(-90, 9.0);
     std::cout << inertial1.heading() << std::endl;
-    wait(0.1, sec);
-    chassis.driveDistance(84, minVoltage, 12.0, false);
+    wait(0.2, sec);
+    chassis.driveDistance(15, minVoltage, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.turn(-4, 9.0);
-    chassis.driveDistance(20, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    moveSlot();
-    wait(1, sec);
+    wait(0.75, sec);
 
-/* Discuss Auton. Strat. && Route::
-      -- Drive && Store BLUE Side Blocks                    {Store Strat. - Side Priority}
-      -- Drive && Store CENTER Blocks                       {Store Strat. - Center Priority}
-      -- Score in Long Goal (Left)                          {Aggro // Score Strat.}
-      -- Drive && Help Secure Long Goal (Right) w/ 24 Inch  {Shield && Sword Strat.}
-*/
-
-// Score in Long Goal (Left)
-    moveSlot();
-    moveSlot();
-    chassis.driveDistance(-14, minVoltage, 12.0, false);
+// Side to Center Blocks (3 Red, 3 Blue)
+    chassis.driveDistance(-40, minVoltage, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.15, sec);
+    wait(0.1, sec);
+    chassis.turn(-90, 9.0);
+    std::cout << inertial1.heading() << std::endl;
+    wait(0.2, sec);
+    chassis.driveDistance(48, minVoltage, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.1, sec);
     chassis.turn(90, 9.0);
     std::cout << inertial1.heading() << std::endl;
+    moveSlot();
+    wait(0.2, sec);
+    chassis.driveDistance(18, minVoltage, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.2, sec);
+    moveSlot();
+    wait(0.3, sec);
+    moveSlot();
+    chassis.driveDistance(-8, minVoltage, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.1, sec); 
+
+// Score in Long Goal (RIGHT)     [6 Red, 8 Blue]     {+ 19}
+    chassis.turn(-90, 9.0);
+    std::cout << inertial1.heading() << std::endl;
+    wait(0.2, sec);
+    chassis.driveDistance(48, minVoltage, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.1, sec);
-    chassis.driveDistance(13, minVoltage, 12.0, false);
+    chassis.turn(90, 9.0);
+    std::cout << inertial1.heading() << std::endl;
+    wait(0.2, sec);
+    chassis.driveDistance(12, minVoltage, 12.0, false);
+    std::cout << chassis.getCurrentMotorPosition() << std::endl;
+    wait(0.1, sec);
+    chassis.turn(90, 9.0);
+    std::cout << inertial1.heading() << std::endl;
+    wait(0.2, sec);
+    chassis.driveDistance(18, minVoltage, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.1, sec);
     chassis.driveDistance(-6, minVoltage, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     rise();
-    chassis.driveDistance(4.5, minVoltage, 9.0, false);
+    chassis.driveDistance(6, minVoltage, 9.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     outTake(); // Changed from outTake() to outTakeAll() to SCORE && AUTO-ROTATE
     outTake();
+    outTake();
+    outTake();
+    outTake();
     fall();
+
+
+  // Adjust time as needed for OPTIMAL LOADING once consistent
 
     // Test, Tune, Adjust AS NECESSARY
     // IF Acceptable Consistency && Accuracy/Precision >> Add Center && Parking
 
 // Store Side Blocks IF NECESSARY --- Else: Store in 15 Inch
 
-// To Be Discussed, Tuned, Finalized
-    // AUTON SKILL RIGHT
+/* Discuss Auton. Strat. && Route::
+      -- Drive && Store BLUE Side Blocks                    {Store Strat. - Side Priority}
+      -- Drive && Store CENTER Blocks                       {Store Strat. - Center Priority}
+      -- Score in Long Goal (Left)                          {Aggro // Score Strat.}
+      -- Drive && Help Secure Long Goal (Right) w/ 24 Inch  {Shield && Sword Strat.} */
 }
 
 
