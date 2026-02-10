@@ -152,7 +152,7 @@ void autonomous()
   chassis.setPosition(0,0,0);
   setDriveTrainConstants();
 
-  AutonSkills_Right();
+  AutonSkills_Left();
 
   /* Add switch for input button mapping
   
@@ -233,8 +233,8 @@ void outTake() {
     armUp = true;
 
     outtake.setVelocity(100, percent);
-    outtake.spinToPosition(225, degrees, true);
-    outtake.spinFor(reverse, 0.8, sec);
+    outtake.spinToPosition(40, degrees, true);
+    outtake.spinFor(reverse, 0.75, sec);
     outtake.spin(forward, 0, volt);
     outtake.stop(hold);
     armUp = false;
@@ -734,7 +734,8 @@ void AutonSkills_Left() { // Strategy: AUTON SKILLS (Left)
     std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
 
 // Back from Origin to Loader (Left)
-    chassis.driveDistance(-36, minVoltage, 12.0, false);
+    matchLoader.set(true);
+    chassis.driveDistance(-28, minVoltage, 12.0, false);
     std::cout << chassis.getCurrentMotorPosition() << std::endl;
     wait(0.1, sec);
     chassis.turnToAngle(42, minVoltage, 9.0, false);
