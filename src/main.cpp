@@ -204,7 +204,7 @@ void bottomOuttakeFunction()
     armUp = true;
     intake.spin(reverse, 12, volt);
     bottomOuttake.setVelocity(100, percent);
-    bottomOuttake.spinToPosition(200, degrees, true);
+    bottomOuttake.spinToPosition(180, degrees, true);
     bottomOuttake.spin(reverse, 12, volt);
     wait(0.8, sec);
     bottomOuttake.stop(hold);
@@ -230,9 +230,6 @@ void moveIntake()
 void matchLoad() {
   matchLoader.set(true);
   moveIntake();
-  wait(1.5, sec);
-  intake.stop(hold);
-  matchLoader.set(false);
 }
 
 //function to unload all
@@ -405,30 +402,28 @@ void usercontrol()
     //Automatic Rotation
     if((Controller1.ButtonL1.pressing() || Controller1.ButtonL2.pressing()) && isSlotFull())
       {
-        if(armUp == false) {
+        if (armUp == false) {
         moveSlot();
       }
      }
 
-    if(Controller1.ButtonL2.pressing() && !revolver.isSpinning())
+    if (Controller1.ButtonL2.pressing() && !revolver.isSpinning())
     {
       matchLoader.set(true);
-    }
-    else
+    } else
     {
       matchLoader.set(false);
     
-      if(!Controller1.ButtonL1.pressing() && !Controller1.ButtonR2.pressing())
+      if (!Controller1.ButtonL1.pressing() && !Controller1.ButtonR2.pressing())
       {
         intake.spin(reverse, 0, volt);
       }
-    }
 
     chassis.arcade();
     wait(20, msec); // Sleep the task for a short amount of time to
     //Brain.Screen.clearScreen();
+    }
   }
-
 }
 
 
