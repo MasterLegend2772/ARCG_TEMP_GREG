@@ -7,11 +7,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-#include "vex.h"
-#include "screen.h"
-#include "util.h"
-#include "Drive.h"
-#include "PID.h"
+#include "Auton.h"
 
 using namespace vex;
 
@@ -20,56 +16,92 @@ using namespace vex;
   // Competition Instance
   competition Competition;
 
-  int odomType = NO_ODOM;
+  //Used for color sort
+  // const int blueTeam = 1;
+  // const int redTeam = 2;
+  int teamColor = 1;
 
-  float velocity = 12.0;
-  float minVoltage = 1.4;
-  bool boost = true;
+//////////////////////////////////////////////////////////////////////
 
-  bool isInAuton = false;
-  int lastPressed = 0;
+///////////////////////// Prototypes /////////////////////////////////
+void toggleDriveSpeed();
+void SetSlot();
+bool TopSlotMajorityEnemy(int);
+void transferArrayInfo();
+void AutonSkills_Left();
+void rise();
+void fall();
+void outTake();
+void rotateRevolver();
+void usercontrol();
 
   bool armUp = false;
 
   //Used for color sort
-  const int blueTeam = 1;
-  const int redTeam = 2;
+  // const int blueTeam = 1;
+  // const int redTeam = 2;
   int teamColor = 1;
 
+//////////////////////////////////////////////////////////////////////
 
-  Drive chassis
-  (
+///////////////////////// Prototypes /////////////////////////////////
+void toggleDriveSpeed();
+void SetSlot();
+bool TopSlotMajorityEnemy(int);
+void transferArrayInfo();
+void AutonSkills_Left();
+void rise();
+void fall();
+void outTake();
+void rotateRevolver();
+void usercontrol();
+
+bool armUp = false;
+bool isBottomOuttakeRunning = false;
+int lastPressed = 0;
+bool isInAuton = false;
+float minVoltage = 1.4;
+
+//////////////////////////////////////////////////////////////////////
+
+Drive chassis
+(
     motor_group(L1, L2, L3, L4), // Left drive train motors 
     motor_group(R1, R2, R3, R4), // Right drive train motors
     PORT8,               // Inertial Sensor Port
     2.75,              // The diameter size of the wheel in inches
     1,                   // 
-    velocity,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
-    odomType,
+    12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
+    NO_ODOM,
     1,                  //Odometry wheel diameter (set to zero if no odom) (1.96 robot behind by .2)
     0,               //Odom pod1 offset 
     0                //Odom pod2 offset
-  );
+);
 
-//////////////////////////////////////////////////////////////////////
+/// @brief Sets the PID values for the Chassis
+void setDriveTrainConstants()
+{
+    // Set the Drive PID values for the DriveTrain
+    chassis.setDriveConstants(
+        2.481, // Kp - Proportion Constant
+        0.0, // Ki - Integral Constant
+        10.0, // Kd - Derivative Constant
+        1.0, // Settle Error
+        100, // Time to Settle
+        25000 // End Time
+    );
 
-///////////////////////// Prototypes /////////////////////////////////
-void setDriveTrainConstants();
-void toggleDriveSpeed();
-void SetSlot();
-bool TopSlotMajorityEnemy(int);
-void transferArrayInfo();
-void Auton_Right1();
-void Auton_Right2();
-void Auton_Right3();
-void Auton_Left1();
-void Auton_Left2();
-void Auton_Left3();
-void AutonSkills_Right();
-void AutonSkills_Left();
-
-//////////////////////////////////////////////////////////////////////
-
+    // Set the Turn PID values for the DriveTrain
+    chassis.setTurnConstants(
+        0.504,        // Kp - Proportion Constant
+        0.0,         // Ki - Integral Constant
+        4.05,       // Kd - Derivative Constant 
+        2.0,       // Settle Error
+        500,      // Time to Settle
+        25000     // End Time
+    );
+    
+}
 
 /// @brief Runs before the competition starts
 void preAuton() 
@@ -132,174 +164,6 @@ void preAuton()
   Brain.Screen.clearScreen();
 }
 
-void rise();
-void fall();
-
-/// @brief Runs during the Autonomous Section of the Competition
-void autonomous() 
-{
-  isInAuton = true;
-
-  outtake.spin(reverse, 9, volt);
-  wait(0.1, sec);
-  outtake.stop(hold);
-
-  chassis.setPosition(0,0,0);
-  setDriveTrainConstants();
-
-  AutonSkills_Left();
-
-  /* Add switch for input button mapping
-  
-  OR link specific robots to Autons
-
-  // switch (lastPressed) 
-  // {
-  //   case 1:
-  //     Auton_1();
-  //     break;
-  //   case 2:
-  //     Auton_2();
-  //     break;
-  //   case 3:
-  //     Auton_3;
-  //     break;
-  //   case 4:
-  //     Auton_4();
-  //     break;
-  //   case 5:
-  //     Auton_5();
-  //     break;
-  //   case 6:
-  //     Auton_6();
-  //     break;
-  //   case 7:
-  //     Auton_7();
-  //     break;
-  //   case 8:
-  //     Auton_8();
-  //     break;
-  //   default:
-  //     DefaultAuton();
-  //     break;
-  // } */
-}
-
-// 0 - Empty
-// 1 - Blue
-// 2 - Red
-
-// int revolverSlots [6][3];
-// int SlotNum = 0;
-
-// Color Sort (Blue team = 1, Red Team = 2)
-// void teamColorSelect(int teamColor) 
-// {
-//   if(teamColor == 1) //Blue Team
-//   {
-//     Controller1.Screen.clearScreen();
-//     Controller1.Screen.setCursor(0,0);
-//     Controller1.Screen.print("Blue Team Selected");
-//   }
-//   if(teamColor == 2) //Red Team
-//   {
-//     Controller1.Screen.clearScreen();
-//     Controller1.Screen.setCursor(0,0);
-//     Controller1.Screen.print("Red Team Selected");
-//   }
-
-// }
-
-
-
-//Rotate revolver
-void moveSlot()
-{
-  //SetSlot(); //Sets the colors in the 2D array for each slot
-  //transferArrayInfo();
-  revolver.setTimeout(0.55, seconds);
-  revolver.setVelocity(100, percent);
-  revolver.spinFor(1, rev);
-}
-
-//Outtake function   ********HAVE SOMEONE LOOK AT HOW COLOR SORT MODIFIED THIS*********
-void outTake() {
-  if (!revolver.isSpinning()) {
-    armUp = true;
-
-    outtake.setVelocity(100, percent);
-    outtake.spinToPosition(40, degrees, true);
-    outtake.spinFor(reverse, 0.75, sec);
-    outtake.spin(forward, 0, volt);
-    outtake.stop(hold);
-    armUp = false;
-    moveSlot();
-  }
-
-  // float pidCompute;
-
-  // PID outtakePID(50, // Proportion
-  //     0.5,            // Integral
-  //     0.01,          // Derivative
-  //     0.1,          // Settle Error
-  //     100,         // Time to Settle (ms)
-  //     2000);      // End Time (ms)
-
-  // if(!revolver.isSpinning())
-  // {
-  //   armUp = true;
-
-  //   while (!outtakePID.isSettled()) { // Desired: 50 degrees
-
-  //     pidCompute = outtakePID.compute(50.0 - outtake.position(degrees));
-  //     pidCompute = clamp(pidCompute, -12.0, 12.0);
-
-  //     if ((pidCompute > 0) && (pidCompute < 1.0)) {
-  //       pidCompute = 1.0;
-  //     } else if (pidCompute < 0 && pidCompute > -1.0) {
-  //       pidCompute = -1.0;
-  //     }
-
-  //     outtake.spin(forward, pidCompute, volt);
-  //     wait(1, sec);
-  //     outtake.spinToPosition(0, degrees, true);
-  //     outtake.stop(hold);
-  //     moveSlot();
-  //   }
-
-  // // Reset Slot 
-  //   // revolverSlots[3][0] = 0;
-  //   // revolverSlots[3][1] = 0;
-  //   // revolverSlots[3][2] = 0;
-
-  // }
-  // else {
-  //   if(TopSlotMajorityEnemy(teamColor)) 
-  //   {
-  //     moveSlot();
-  //   }
-  //  }
-}
-
-bool isBottomOuttakeRunning = false;
-void bottomOuttakeFunction()
-{
-  if(!revolver.isSpinning())
-  {
-    isBottomOuttakeRunning = true;
-    armUp = true;
-    intake.spin(reverse, 12, volt);
-    bottomOuttake.setVelocity(100, percent);
-    bottomOuttake.spinToPosition(200, degrees, true);
-    bottomOuttake.spin(reverse, 12, volt);
-    wait(0.9, sec);
-    bottomOuttake.stop(hold);
-    armUp = false;
-    isBottomOuttakeRunning = false;
-    intake.stop(hold);
-  }
-}
-
 //Rise!!
 void rise() {
 
@@ -313,6 +177,65 @@ void fall() {
 
   liftL.set(false);
   liftR.set(false);
+}
+
+//Outtake function   ********HAVE SOMEONE LOOK AT HOW COLOR SORT MODIFIED THIS*********
+void outTake() {
+  if (!revolver.isSpinning()) 
+  {
+    armUp = true;
+    outtake.stop(coast);
+
+    outtake.setVelocity(100, percent);
+    outtake.spinToPosition(200, degrees, true);
+    // outtake.spinToPosition(0, degrees, false);
+    outtake.spinFor(reverse, 1, sec);
+    outtake.stop(hold);
+    armUp = false;
+    moveSlot();
+  }
+}
+
+void bottomOuttakeFunction()
+{
+  if(!revolver.isSpinning())
+  {
+    isBottomOuttakeRunning = true;
+    armUp = true;
+    intake.spin(reverse, 12, volt);
+    bottomOuttake.setVelocity(100, percent);
+    bottomOuttake.spinToPosition(180, degrees, true);
+    bottomOuttake.spin(reverse, 12, volt);
+    wait(0.8, sec);
+    bottomOuttake.stop(hold);
+    //intakeLeft.spin(reverse, 0, volt);
+    //intakeRight.spin(reverse, 0, volt);
+    armUp = false;
+    isBottomOuttakeRunning = false;
+
+    // revolverSlots[0][0] = 0;
+    // revolverSlots[0][1] = 0;
+    // revolverSlots[0][2] = 0;
+  }
+}
+
+void moveIntake()
+{
+  if(!revolver.isSpinning())
+  {
+    intake.spin(forward, 12, volt);
+  }
+}
+
+bool isMatchLoading = false;
+void matchLoad() {
+  if (!isMatchLoading) {
+    matchLoader.set(true);
+    isMatchLoading = true;
+  } else {
+    matchLoader.set(false);
+    isMatchLoading = false;
+  }
 }
 
 //function to unload all
@@ -386,110 +309,43 @@ void FixGeneva()
   if(!revolver.isSpinning())
     revolver.spin(reverse, 8, volt);
 }
-//******************************************************************************/
-//COLOR SORTING EVERYTHING!!!!!!!!!!!!
-
-// void transferArrayInfo() 
-// {
-
-//   int tempArr[6][3] = {
-//         {0, 0, 0},
-//         {0, 0, 0},
-//         {0, 0, 0},
-//         {0, 0, 0},
-//         {0, 0, 0},
-//         {0, 0, 0}
-//     };
-
-//   //Shifts everything in revolverSlots by 1 in tempArr
-//   for(int i = 0; i < 6; i++)
-//   {
-//     for(int j = 0; j < 3; j++)
-//     {
-//       if(i == 5)
-//       {
-//         tempArr[0][j] = revolverSlots[i][j];
-//       }
-//       else
-//         tempArr[i+1][j] = revolverSlots[i][j];
-//     }
-
-//     //Puts shifted temp into revolverSlots to complete the transfer
-//     for(int i = 0; i < 6; i++) 
-//     {
-//       for(int j = 0; j < 3; j++) 
-//       {
-//         revolverSlots[i][j] = tempArr[i][j];
-//       }
-//     }
-//   }
-
-// }
 
 
-/******************************************************************
- * Function: SetSlot()
- * Purpose: Assign 0, 1, or 2 to each sensor within slots 0-5
-*****************************************************************/
+void moveSlot()
+{
+    outtake.setVelocity(100, percent);
+    outtake.spinFor(reverse, 0.1, sec);
+    outtake.stop(hold);
+    revolver.setBrake(coast);
 
-// void SetSlot()
-// {
-//   // SetSlotColor 0
-//   if((backColorSensor.hue() <= 20) && (backColorSensor.hue() >= 0))
-//     revolverSlots[0][0] = 2;
-//   else if((backColorSensor.hue() <= 170) && (backColorSensor.hue() >= 200))
-//     revolverSlots[0][0] = 1;
-//   else
-//     revolverSlots[0][0] = 0;
-  
-//   // SetSlotColor 1                        
+    PID revolverPID(0.66, 0, 2, 10, 100, 2000);
+    float desiredPos = 360 + revolver.position(degrees);
 
-//   if((middleColorSensor.hue() <= 20) && (middleColorSensor.hue() >= 0))
-//     revolverSlots[0][1] = 2;
-//   else if((middleColorSensor.hue() <= 170) && (middleColorSensor.hue() >= 200))
-//     revolverSlots[0][1] = 1;
-//   else
-//     revolverSlots[0][1] = 0;
+    while(!revolverPID.isSettled())
+    {
+      Brain.Screen.setCursor(1,1);
+      Brain.Screen.print("Is Revolving");
+      float currentPos = revolver.position(degrees);
 
-//   // SetSlotColor 2
+      float output = revolverPID.compute(desiredPos - currentPos);
+      output = clamp(output, -12, 12);
 
-//   if((frontColorSensor.hue() <= 20) && (frontColorSensor.hue() >= 0))
-//     revolverSlots[0][2] = 2;
-//   else if((frontColorSensor.hue() <= 170) && (frontColorSensor.hue() >= 200))
-//     revolverSlots[0][2] = 1;
-//   else
-//     revolverSlots[0][2] = 0;
-  
-//   wait(300, msec);
-  
-// }
+      revolver.spin(forward, output, volt);
+      wait(10, msec);
+      Brain.Screen.clearScreen();
+    }
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Is Revolved");
 
-/******************************************************************
- * Function: TopSlotMajorityEnemy()
- * Purpose: Check if the top Slot's majority is the enemy color
-*****************************************************************/
-// bool TopSlotMajorityEnemy(int teamColor) 
-// {
-//   if(((revolverSlots[3][0] == teamColor) && (revolverSlots[3][1] == teamColor))  || //Finds if majority is our team!
-//       ((revolverSlots[3][1] == teamColor) && (revolverSlots[3][2] == teamColor)) ||
-//       ((revolverSlots[3][0] == teamColor) && (revolverSlots[3][2] == teamColor)))
-//     return false;
-
-//   else //If majority is not our team, it is the enemy team!
-//     return true;
-// }
-
-/*************************************************************************************/
-
-void setBoost() {
-  if (!boost) {
-    velocity = 12.0;
-    boost = true;
-  } else if (boost) {
-    velocity = 1.0;
-    boost = false;
-  }
+    revolver.spin(forward, 0, volt);
+    revolver.setBrake(hold);
+    outtake.stop(coast);
 }
+
+
+// Check Canister
+bool isSlotFull();
 
 /// @brief Runs during the UserControl section of the competition
 void usercontrol() 
@@ -507,10 +363,10 @@ void usercontrol()
 
   outtake.spin(reverse, 9, volt);
   wait(0.1, sec);
+  outtake.spin(reverse, 0, volt);
   outtake.stop(hold);
 
   Brain.Screen.clearScreen();
-  bool isSpinning = false;
 
   //Team select function - note: this changes depending on the slot
   //teamColorSelect(teamColor); // Team selected
@@ -529,7 +385,6 @@ void usercontrol()
 
   Controller1.ButtonLeft.pressed(FixGeneva);
 
-  Controller1.ButtonX.pressed(setBoost);
 
   // User control code here, inside the loop
   while (1) 
@@ -547,36 +402,47 @@ void usercontrol()
         moveSlot();
       }
     }
-  
 
     //Automatic Rotation
     if((Controller1.ButtonL1.pressing() || Controller1.ButtonL2.pressing()) && isSlotFull())
       {
-        if(armUp == false) {
+        if (armUp == false) {
         moveSlot();
       }
      }
 
 
+    // Match Loader Toggle
+    int holdTimer = 0;
+    if (Controller1.ButtonL2.pressing() && !revolver.isSpinning() && holdTimer <= 0)
+    {
+      if (!isBottomOuttakeRunning) {
+        isBottomOuttakeRunning = true;
+      } else {
+        isBottomOuttakeRunning = false;
+      }
 
-     //
-    if(Controller1.ButtonL2.pressing() && !revolver.isSpinning())
-    {
-      matchLoader.set(false);
+      int holdTimer = 60;
+
     } else
-    {
-      matchLoader.set(true);
-      if(!Controller1.ButtonL1.pressing() && !Controller1.ButtonR2.pressing())
+    {   
+      if(!Controller1.ButtonL1.pressing() && !Controller1.ButtonL2.pressing() && !Controller1.ButtonR2.pressing())
       {
         intake.spin(reverse, 0, volt);
       }
     }
 
+    if (holdTimer > 0) {
+      holdTimer--;
+    } else {
+      holdTimer = 0;
+    }
+
+
     chassis.arcade();
     wait(20, msec); // Sleep the task for a short amount of time to
-    Brain.Screen.clearScreen();
+    //Brain.Screen.clearScreen();
   }
-
 }
 
 
@@ -595,349 +461,4 @@ int main()
   {
     wait(100, msec);
   }
-}
-
-
-
-/// @brief Sets the PID values for the Chassis
-void setDriveTrainConstants()
-{
-    // Set the Drive PID values for the DriveTrain
-    chassis.setDriveConstants(
-        2.481, // Kp - Proportion Constant
-        0.0, // Ki - Integral Constant
-        10.0, // Kd - Derivative Constant
-        1.0, // Settle Error
-        100, // Time to Settle
-        25000 // End Time
-    );
-
-    // Set the Turn PID values for the DriveTrain
-    chassis.setTurnConstants(
-        0.504,        // Kp - Proportion Constant
-        0.0,         // Ki - Integral Constant
-        4.05,       // Kd - Derivative Constant 
-        2.0,       // Settle Error
-        500,      // Time to Settle
-        25000     // End Time
-    );
-    
-}
-
-
-// BREAK - Separate Autonomous Routines into separate Files when possible.
-
-
-// Auton SKILLS Routes
-/// @brief Auton SKILLS Right [RED] - 15 Inch Robot
-void AutonSkills_Right() { // Strategy: AUTON SKILLS (Right)
-    Brain.Screen.print("EXECUTING: Auton SKILLS - RIGHT");
-
-// Initial Diagnostics
-    std::cout << std::endl << std::endl << std::endl;
-    std::cout << "_______________________________" << std::endl;
-    std::cout << std::setw(27) << "EXECUTING: Auton Skills - Right" << std::endl;
-    std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
-    std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
-
-// Back from Origin to Side Blocks (Right)  {2 Blue}
-    chassis.driveDistance(-24, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.turn(198, 9.0);
-    std::cout << inertial1.heading() << std::endl;   
-    wait(0.2, sec);
-    moveIntake();
-    chassis.driveDistance(16, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(1.5, sec); // Adjust time as needed for OPTIMAL LOADING once consistent
-  
-// Reverse && Drive to Side Blocks (Left)   {2 Blue}
-    chassis.driveDistance(-12, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.2, sec);
-    chassis.turn(180, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    wait(0.1, sec);
-    chassis.driveDistance(84, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.turn(-4, 9.0);
-    chassis.driveDistance(20, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    moveSlot();
-    wait(1, sec);
-
-/* Discuss Auton. Strat. && Route::
-      -- Drive && Store BLUE Side Blocks                    {Store Strat. - Side Priority}
-      -- Drive && Store CENTER Blocks                       {Store Strat. - Center Priority}
-      -- Score in Long Goal (Left)                          {Aggro // Score Strat.}
-      -- Drive && Help Secure Long Goal (Right) w/ 24 Inch  {Shield && Sword Strat.}
-*/
-
-// Score in Long Goal (Left)
-    moveSlot();
-    moveSlot();
-    chassis.driveDistance(-14, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.15, sec);
-    chassis.turn(90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    wait(0.1, sec);
-    chassis.driveDistance(13, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.driveDistance(-6, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    rise();
-    chassis.driveDistance(4.5, minVoltage, 9.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    outTake(); // Changed from outTake() to outTakeAll() to SCORE && AUTO-ROTATE
-    outTake();
-    fall();
-
-    // Test, Tune, Adjust AS NECESSARY
-    // IF Acceptable Consistency && Accuracy/Precision >> Add Center && Parking
-
-// Store Side Blocks IF NECESSARY --- Else: Store in 15 Inch
-
-// To Be Discussed, Tuned, Finalized
-    // AUTON SKILL RIGHT
-}
-
-
-/// @brief Auton SKILLS Left [RED] - 24 Inch Robot
-void AutonSkills_Left() { // Strategy: AUTON SKILLS (Left)
-    Brain.Screen.print("EXECUTING: Auton SKILLS - LEFT");
-
-// Initial Diagnostics
-    std::cout << std::endl << std::endl << std::endl;
-    std::cout << "_______________________________" << std::endl;
-    std::cout << std::setw(27) << "EXECUTING: Auton Skills - Left" << std::endl;
-    std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
-    std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
-
-// Back from Origin to Loader (Left)
-    matchLoader.set(true);
-    chassis.driveDistance(-28, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.turnToAngle(42, minVoltage, 9.0, false);
-    std::cout << inertial1.heading() << std::endl;
-
-// Intake && Store Blocks from Loader
-    moveIntake();
-    chassis.driveDistance(35, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    // Match Loader Function
-    wait(2, sec); // Adjust time as needed for OPTIMAL LOADING once consistent
-
-// Reverse && Drive to Loader (Right)
-    chassis.driveDistance(-35, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.turn(-90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    wait(0.1, sec);
-    chassis.driveDistance(96, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.turn(90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    wait(0.1, sec);
-
-// Intake && Store Blocks from Loader (Again)
-    chassis.driveDistance(35, minVoltage, 12.0, false);
-    // Match Loader Function
-    wait(2, sec); // Adjust time as needed for OPTIMAL LOADING once consistent
-
-// Choices:
-    // 1) Score in Long Goal (Right) 
-    // 2) Block // Score Long Goal (Left) w/ 15 Inch
-    chassis.driveDistance(-32, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.1, sec);
-    chassis.turn(180, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(6.5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    rise();
-    outTake(); // Changed from outTake() to outTakeAll() to SCORE && AUTO-ROTATE
-    fall();
-
-    // Test, Tune, Adjust AS NECESSARY
-    // IF Acceptable Consistency && Accuracy/Precision >> Add Center && Parking
-
-// Store Side Blocks IF NECESSARY --- Else: Store in 15 Inch
-
-// To Be Discussed, Tuned, Finalized
-    // AUTON SKILL LEFT
-}
-
-
-
-// Auton Match Routes
-
-/// @brief Auton Right Slot 1 [BLUE] - Write code for route within this function.
-void Auton_Right1() { // Strategy: Score (Right)
-    Brain.Screen.print("EXECUTING: Auton 1 - RIGHT");
-
-// Initial Diagnostics
-    std::cout << std::endl << std::endl << std::endl;
-    std::cout << "_______________________________" << std::endl;
-    std::cout << std::setw(27) << "EXECUTING: Auton 1 - Right" << std::endl;
-    std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
-    std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
-
-// Drive from Origin to LOADER (Right)
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(32, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.25, sec);
-    chassis.turn(-45, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(36.5, minVoltage, 12.0, false);
-    wait(0.25, sec);
-    moveIntake();
-
-// Load Blocks from Loader (including: Extra given Loader Blocks [6])
-    // Not loading reliably, needs tuning && other systems
-    chassis.driveDistance(5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(2, sec); // Adjust time as needed for optimal loading
-
-// Reverse to Load Side Blocks [2]
-    chassis.driveDistance(-14.5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.25, sec);
-    chassis.turn(-90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    wait(0.35, sec);
-    // Loads BOTH Side Blocks consistently && reliably
-    chassis.driveDistance(21.5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(1.5, sec);
-
-// Drive to RIGHT Long Goal to SCORE
-    // Needs to be tested, tuned, finalized
-    chassis.driveDistance(-20, minVoltage, 12.0, false);
-    wait(0.25, sec);
-    chassis.turn(-90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(16.5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    rise();
-    wait(0.5, sec);
-    outTake();
-    std::cout << "Scoring in Left Long Goal" << std::endl;
-    wait(3, sec);
-
-// Drive to Center Goal
-    fall();
-    chassis.driveDistance(-5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    chassis.turn(-90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(22, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    chassis.turn(45, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(13, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    outTake();
-    wait(5, sec);
-}
-
-/// @brief Auton Right Slot 2 [BLUE] - Write code for route within this function.
-void Auton_Right2() {
-    Brain.Screen.print("EXECUTING: Auton 2 - RIGHT");
-
-  // Initial Diagnostics
-    std::cout << std::endl << std::endl << std::endl;
-    std::cout << "_______________________________" << std::endl;
-    std::cout << std::setw(27) << "EXECUTING: Auton 1 - Right" << std::endl;
-    std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
-    std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
-
-    chassis.driveDistance(24, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-}
-
-/// @brief Auton Right Slot 3 [RED]- Write code for route within this function.
-void Auton_Right3() {
-    Brain.Screen.print("EXECUTING: Auton 3 - RIGHT");
-}
-
-
-/// @brief Auton Left Slot 1 [BLUE]- Write code for route within this function.
-void Auton_Left1() { // Strategy: Score (Left)
-    Brain.Screen.print("EXECUTING: Auton 1 - LEFT");
-
-    // Initial Diagnostics
-    std::cout << std::endl << std::endl << std::endl;
-    std::cout << "_______________________________" << std::endl;
-    std::cout << std::setw(27) << "EXECUTING: Auton 1 - Left" << std::endl;
-    std::cout << "Starting Position:  " << chassis.getCurrentMotorPosition() << std::endl;
-    std::cout << "Starting Heading:   " << inertial1.heading() << std::endl;
-
-// Drive from Origin to LOADER (Left)
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(36.5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.25, sec);
-    chassis.turn(-90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    wait(0.25, sec);
-    moveIntake();
-
-// Load Blocks from Loader (including: Extra given Loader Blocks [6])
-    // Not loading reliably, needs tuning && other systems
-    chassis.driveDistance(5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(2, sec); // Adjust time as needed for optimal loading
-
-// Reverse to Load Side Blocks [2]
-    chassis.driveDistance(-12, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(0.25, sec);
-    chassis.turn(90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    wait(0.25, sec);
-    // Loads BOTH Side Blocks consistently && reliably
-    chassis.driveDistance(12.5, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    wait(1.5, sec);
-
-// Drive to LEFT Long Goal to SCORE
-    // Needs to be tested, tuned, finalized
-    chassis.driveDistance(-15, minVoltage, 12.0, false);
-    wait(0.25, sec);
-    chassis.turn(90, 9.0);
-    std::cout << inertial1.heading() << std::endl;
-    chassis.driveDistance(22, minVoltage, 12.0, false);
-    std::cout << chassis.getCurrentMotorPosition() << std::endl;
-    rise();
-    wait(0.5, sec);
-    outTake;
-    std::cout << "Scoring in Left Long Goal" << std::endl;
-    wait(3, sec);
-    fall();
-
-// Drive to Park Zone & Park
-    // chassis.driveDistance(-5, 3.0, 12.0, false);
-    // chassis.turn(145, 9.0);
-    // chassis.driveDistance(45, 3.0, 12.0, false);
-
-    
-    // For AUTON WIN POINT
-}
-
-/// @brief Auton Left Slot 2 [BLUE] - Write code for route within this function.
-void Auton_Left2() {
-    Brain.Screen.print("EXECUTING: Auton 2 - LEFT");
-}
-
-/// @brief Auton Left Slot 3 [RED] - Write code for route within this function.
-void Auton_Left3() {
-    Brain.Screen.print("EXECUTING: Auton 3 - LEFT");
 }
