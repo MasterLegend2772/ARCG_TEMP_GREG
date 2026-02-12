@@ -1,15 +1,15 @@
 {
 	"extension": {
-		"version": "0.7.2025041600",
+		"version": "0.8.2026020401",
 		"json": 2
 	},
 	"project": {
-		"name": "RED TEAM",
+		"name": "RED_Greg",
 		"description": "",
-		"creationDate": "Wed, 20 Nov 2024 00:18:19 GMT",
+		"creationDate": "Thu, 12 Feb 2026 16:48:16 GMT",
 		"platform": "V5",
 		"language": "cpp",
-		"slot": 1,
+		"slot": 2,
 		"sdkVersion": "V5_20240802_15_00_00",
 		"cpp": {
 			"includePath": [],
